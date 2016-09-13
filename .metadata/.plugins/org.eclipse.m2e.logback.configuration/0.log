@@ -1,0 +1,31 @@
+2016-09-13 21:47:40,765 [Worker-13] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: rovy_api:rovy_api:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_api/pom.xml.
+2016-09-13 21:47:40,764 [Worker-2] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: rovy_api:rovy_api:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_api/pom.xml.
+2016-09-13 21:47:42,181 [Worker-13] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:42,212 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_api/src/main/resources
+2016-09-13 21:47:42,218 [Worker-13] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:42,219 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_api/src/test/resources
+2016-09-13 21:47:43,742 [Worker-13] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: rovy_server:rovy_server:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_server/pom.xml.
+2016-09-13 21:47:43,748 [Worker-4] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: rovy_api:rovy_api:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_api/pom.xml.
+2016-09-13 21:47:45,425 [Worker-13] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:45,426 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_server/src/main/resources
+2016-09-13 21:47:45,436 [Worker-13] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:45,437 [Worker-13] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_server/src/test/resources
+2016-09-13 21:47:47,083 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:47,090 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_server/src/main/resources
+2016-09-13 21:47:47,625 [Worker-15] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:47,625 [Worker-15] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_server/src/test/resources
+2016-09-13 21:47:47,632 [Worker-5] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: rovy_api:rovy_api:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_api/pom.xml.
+2016-09-13 21:47:48,068 [Worker-5] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: rovy_server:rovy_server:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_server/pom.xml.
+2016-09-13 21:47:48,575 [Worker-5] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: rovy_web:rovy_web:0.0.1-SNAPSHOT @ /home/gnox/dev_java/rovy/rovy_web/pom.xml.
+2016-09-13 21:47:50,936 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:50,936 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_api/src/main/resources
+2016-09-13 21:47:50,938 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:50,939 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_api/src/test/resources
+2016-09-13 21:47:50,993 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:50,993 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_server/src/main/resources
+2016-09-13 21:47:50,995 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:50,995 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_server/src/test/resources
+2016-09-13 21:47:51,229 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:51,230 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_web/src/main/resources
+2016-09-13 21:47:51,231 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-09-13 21:47:51,232 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /home/gnox/dev_java/rovy/rovy_web/src/test/resources

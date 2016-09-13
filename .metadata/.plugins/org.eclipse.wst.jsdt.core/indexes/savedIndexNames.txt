@@ -1,0 +1,6 @@
+INDEX VERSION 1.3+/home/gnox/dev_java/rovy/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
+3324104762.index
+2866089446.index
+1100035553.index
+3917786530.index
+2023055848.index
