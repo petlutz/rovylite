@@ -11,6 +11,8 @@ public class Marker {
 	
 	private Point center;
 	
+	private Integer size;
+	
 	public Marker() {
 	}
 
@@ -50,6 +52,15 @@ public class Marker {
 			center = newCenter;
 		}
 		return center;
+	}
+	
+	public int getSize() {
+		if (size == null) {
+			int maxX = points.stream().map(p -> p.getX()).reduce((a, b) -> a > b ? a : b).orElse(0);
+			int minX = points.stream().map(p -> p.getX()).reduce((a, b) -> a < b ? a : b).orElse(0);
+			size = maxX - minX;
+		}
+		return size;
 	}
 	
 }

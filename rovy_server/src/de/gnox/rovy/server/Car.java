@@ -49,8 +49,8 @@ public class Car {
 		boolean stop = false;
 		
 		boolean drivingx = false;
-		
 		boolean drivingy = false;
+		boolean drivingz = false;
 		
 		@Override
 		public void run() {
@@ -59,21 +59,21 @@ public class Car {
 			
 			Point camCenter = new Point(340, 220);
 			
-			Boolean lastDirection = null;
 			camTower.getCam().switchLightOn();
 			while (!stop) {
 				
 				Collection<Marker> markers = detector.detectMarkers();
 				Optional<Marker> marker42 = markers.stream().filter(marker -> marker.getValue() == 42).findAny();
-				if (!drivingx && !drivingy && marker42.isPresent()) {
+				if (!drivingx && !drivingy && !drivingz && marker42.isPresent()) {
 					
 					Point markerCenter = marker42.get().getCenter();
-					System.out.println("Marker 42 detected: " + markerCenter);
+					System.out.println("Marker 42 detected: " + markerCenter + " " + marker42.get().getSize());
 					
 					
 					int xDiff = markerCenter.getX() - camCenter.getX();
 					
 					if (Math.abs(xDiff) > 50) {
+						
 						boolean direction = xDiff > 0;
 						
 						Runnable r = () -> {
@@ -99,9 +99,29 @@ public class Car {
 						// else
 						// Car.this.display.lookLeft();
 
+					} else {
+					
+						int sizeDiff = 70 - marker42.get().getSize();
+						if (Math.abs(sizeDiff) > 20) {
+
+							int cm = sizeDiff;
+
+							Runnable r = () -> {
+								long startTime = System.currentTimeMillis();
+								driveNewInternal(cm, null);
+								int restTime = 100 - (int) (System.currentTimeMillis() - startTime);
+								if (restTime > 0)
+									RovyUtility.sleep(restTime);
+								drivingz = false;
+							};
+
+							drivingz = true;
+							new Thread(r).start();
+						}
+					
 					}
 					
-					
+					/*
 					int yDiff = markerCenter.getY() - camCenter.getY();
 					
 					if (Math.abs(yDiff) > 50) {
@@ -120,12 +140,8 @@ public class Car {
 						drivingy = true;
 						new Thread(r).start();
 						
-						// if (right)
-						// Car.this.display.lookRight();
-						// else
-						// Car.this.display.lookLeft();
-
 					}
+					*/
 					
 //					if (!Objects.equals(direction, lastDirection)) {
 //						rightWheel.stop();
@@ -211,6 +227,16 @@ public class Car {
 		if (isMarkerFollowingMode())
 			throw new IllegalStateException("stop marker following mode first");
 
+		cam.startCapturing();
+		
+		driveNewInternal(cm, display);
+		
+//		cam.waitForVideo();
+		cam.finishCapturing();
+		display.lookNormal();
+	}
+
+	private void driveNewInternal(int cm, I2cDisplay display) {
 		float meters = (float)cm / 100.0f;
 		
 		float metersAbs = Math.abs(meters);
@@ -218,17 +244,18 @@ public class Car {
 //		int millis = (int) (metersAbs * 4166.0f);
 		
 //		cam.captureVideoAsync(millis);
-		cam.startCapturing();
+		
 
 		int speed = 0;
 		
 		boolean foreward = meters > 0;
-		
-		if (foreward)
-			display.lookForeward();
-		else 
-			display.lookBackward();
-		
+
+		if (display != null)
+			if (foreward)
+				display.lookForeward();
+			else
+				display.lookBackward();
+
 		rightWheel.start(foreward, speed);
 		leftWheel.start(foreward, speed);
 
@@ -262,10 +289,6 @@ public class Car {
 //		RovyUtility.sleep(millis);
 //		// RoverUtility.sleep((int)(1000f));
 //		stopNow();
-		
-//		cam.waitForVideo();
-		cam.finishCapturing();
-		display.lookNormal();
 	}
 	
 //	public void driveStepped(float meters, Cam cam) throws RovyException {
