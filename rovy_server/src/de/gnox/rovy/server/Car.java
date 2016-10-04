@@ -3,6 +3,8 @@ package de.gnox.rovy.server;
 import com.pi4j.io.gpio.RaspiPin;
 
 import de.gnox.rovy.api.RovyTelemetryData;
+import de.gnox.rovy.ocv.Dictionary;
+import de.gnox.rovy.ocv.MarkerDetector;
 
 public class Car {
 
@@ -16,6 +18,8 @@ public class Car {
 	private Wheel rightWheel;
 
 	private Wheel leftWheel;
+	
+	private MarkerFollower markerFollower = null;
 
 	public Car() {
 		 rightWheel = new Wheel(1, RaspiPin.GPIO_03, RaspiPin.GPIO_06);
@@ -27,6 +31,41 @@ public class Car {
 //		 leftWheel = new Wheel(40, 38);
 	}
 
+	private class MarkerFollower implements Runnable {
+		
+		boolean stop = false;
+		
+		@Override
+		public void run() {
+			MarkerDetector detector = new MarkerDetector();
+			detector.init(false, 0, Dictionary.DICT_4X4_250);
+			
+			
+			Car.this.markerFollower = null;
+		}
+		
+		public void stop() {
+			stop = true;
+		}
+		
+		
+	};
+	
+	public boolean isMarkerFollowingMode() {
+		return markerFollower != null;
+	}
+	
+	public void startMarkerFollowingMode() {
+		if (isMarkerFollowingMode())
+			throw new IllegalStateException("stop marker following mode first");
+		markerFollower = new MarkerFollower();
+		new Thread(markerFollower).start();	
+	}
+	
+	public void stopMarkerFollowingMode() {
+		markerFollower.stop();
+	}
+	
 //	public void drive(float meters, Cam cam) throws RovyException {
 //		if (meters < -10 || meters > 10)
 //			throw new RovyException("meters not between +-10");
@@ -53,6 +92,8 @@ public class Car {
 	public void driveNew(int cm, Cam cam, I2cDisplay display) throws RovyException {
 		if (cm < -1000 || cm > 1000)
 			throw new RovyException("cm not between +-1000");
+		if (isMarkerFollowingMode())
+			throw new IllegalStateException("stop marker following mode first");
 
 		float meters = (float)cm / 100.0f;
 		
@@ -294,6 +335,8 @@ public class Car {
 	public void turnNew(float degrees, Cam cam, I2cDisplay display) throws RovyException {
 		if (degrees < -360 || degrees > 360)
 			throw new RovyException("degrees not between +-360");
+		if (isMarkerFollowingMode())
+			throw new IllegalStateException("stop marker following mode first");
 
 //		int millis = (int) (Math.abs(degrees) * 6.5f);
 //		cam.clear();
@@ -342,6 +385,8 @@ public class Car {
 	public void turnFwdBkw(float degrees, boolean fwd, I2cDisplay display) throws RovyException {
 		if (degrees < -360 || degrees > 360)
 			throw new RovyException("degrees not between +-360");
+		if (isMarkerFollowingMode())
+			throw new IllegalStateException("stop marker following mode first");
 
 //		int millis = (int) (Math.abs(degrees) * 6.5f);
 //		cam.clear();
@@ -398,17 +443,20 @@ public class Car {
 	public void slide(float degrees, I2cDisplay display) throws RovyException {
 		if (degrees < -90 || degrees > 90)
 			throw new RovyException("degrees not between +-90");
+		if (isMarkerFollowingMode())
+			throw new IllegalStateException("stop marker following mode first");
+		
 		turnFwdBkw(-degrees, false,  display);
 		turnFwdBkw(degrees, false,  display);
 		turnFwdBkw(degrees, true,  display);
 		turnFwdBkw(-degrees, true,  display);
 	}
 
-	public int speedup(long starttime, long now, int maxspeed) {
+	private int speedup(long starttime, long now, int maxspeed) {
 		return speedup(now - starttime, maxspeed);
 	}
 	
-	public int speedup(long driveTime, int maxspeed) {
+	private int speedup(long driveTime, int maxspeed) {
 		int speedoffset = maxspeed - SPEEDUP_START;
 		int speed;
 		speed = SPEEDUP_START + (int)((float)speedoffset * (float)driveTime / (float)SPEEDUP_MILLIS);
@@ -418,7 +466,9 @@ public class Car {
 	}
 
 	public void dance(Cam cam) throws RovyException {
-
+		if (isMarkerFollowingMode())
+			throw new IllegalStateException("stop marker following mode first");
+		
 		int millis1 = 200;
 		int millis2 = 400;
 		int millis3 = 200;
@@ -449,7 +499,8 @@ public class Car {
 		cam.finishCapturing();
 	}
 
-	public void stopNow() {
+	private void stopNow() {
+		
 		rightWheel.stop();
 		leftWheel.stop();
 	}
