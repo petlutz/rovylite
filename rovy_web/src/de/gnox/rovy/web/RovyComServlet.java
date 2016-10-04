@@ -218,6 +218,10 @@ public class RovyComServlet extends HttpServlet {
 		w.append("<form action='RovyComServlet'>");
 		w.append("<button type='submit' name='command' value='MakeNoise'>noise</button>");
 		w.append("</form>");
+		w.append("<form action='RovyComServlet'>");
+		w.append("<button type='submit' name='command' value='MarkerFollowingOn'>markerfollow on</button>");
+		w.append("<button type='submit' name='command' value='MarkerFollowingOff'>markerfollow off</button>");
+		w.append("</form>");
 		w.append("<hr>");
 		w.append("<a href='RovyComServlet?page=media'>media</a>");
 

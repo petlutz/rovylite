@@ -116,7 +116,7 @@ public class Wheel {
 	public void step(boolean foreward) {
 //		System.out.println("step " + pinPwm + " " + pinDirection);
 		start(foreward);
-		RovyUtility.sleep(20);
+		RovyUtility.sleep(10);
 		stop();
 	}
 

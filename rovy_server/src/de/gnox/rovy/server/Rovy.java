@@ -173,6 +173,11 @@ public class Rovy {
 			case MakeNoise:
 				audio.makeNoise();
 				break;
+			case MarkerFollowingOn:
+				car.startMarkerFollowingMode(camTower);
+				break;
+			case MarkerFollowingOff:
+				car.stopMarkerFollowingMode();
 			default:
 				throw new RovyException("unknown command");
 			}

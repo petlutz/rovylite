@@ -241,12 +241,12 @@ public class Cam {
 		
 	}
 	
-	private void switchLightOn() {
+	public void switchLightOn() {
 		if (useLight)
 			lightOutput.low();
 	}
 	
-	private void switchLightOff() {
+	public void switchLightOff() {
 		lightOutput.high();
 	}
 	

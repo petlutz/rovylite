@@ -118,6 +118,22 @@ public class CamTower {
 		updateAllowedDirection();
 	}
 	
+	public void camUpNoCapturing() {
+		if (!isUpAllowed())
+			return;
+//		cam.clear();
+		camWheel.step(true);
+		updateAllowedDirection();
+	}
+
+	public void camDownNoCapturing() {
+		if (!isDownAllowed())
+			return;
+//		cam.clear();
+		camWheel.step(false);
+		updateAllowedDirection();
+	}
+	
 	private enum AllowedDirection {
 		UP, DOWN, BOTH;
 	}

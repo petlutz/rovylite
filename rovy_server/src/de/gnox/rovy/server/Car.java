@@ -1,10 +1,16 @@
 package de.gnox.rovy.server;
 
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+
 import com.pi4j.io.gpio.RaspiPin;
 
 import de.gnox.rovy.api.RovyTelemetryData;
 import de.gnox.rovy.ocv.Dictionary;
+import de.gnox.rovy.ocv.Marker;
 import de.gnox.rovy.ocv.MarkerDetector;
+import de.gnox.rovy.ocv.Point;
 
 public class Car {
 
@@ -32,15 +38,123 @@ public class Car {
 	}
 
 	private class MarkerFollower implements Runnable {
+	
+		
+		private CamTower camTower;
+		
+		public MarkerFollower(CamTower camTower) {
+			this.camTower = camTower;
+		}
 		
 		boolean stop = false;
+		
+		boolean drivingx = false;
+		
+		boolean drivingy = false;
 		
 		@Override
 		public void run() {
 			MarkerDetector detector = new MarkerDetector();
 			detector.init(false, 0, Dictionary.DICT_4X4_250);
 			
+			Point camCenter = new Point(340, 220);
 			
+			Boolean lastDirection = null;
+			camTower.getCam().switchLightOn();
+			while (!stop) {
+				
+				Collection<Marker> markers = detector.detectMarkers();
+				Optional<Marker> marker42 = markers.stream().filter(marker -> marker.getValue() == 42).findAny();
+				if (!drivingx && !drivingy && marker42.isPresent()) {
+					
+					Point markerCenter = marker42.get().getCenter();
+					System.out.println("Marker 42 detected: " + markerCenter);
+					
+					
+					int xDiff = markerCenter.getX() - camCenter.getX();
+					
+					if (Math.abs(xDiff) > 50) {
+						boolean direction = xDiff > 0;
+						
+						Runnable r = () -> {
+							rightWheel.start(!direction, 100);
+							leftWheel.start(direction, 100);
+							int time = Math.abs(xDiff) / 3;
+							RovyUtility.sleep(time);
+							rightWheel.stop();
+							leftWheel.stop();
+							
+							int restTime = 100 - time;
+							if (restTime > 0)
+								RovyUtility.sleep(restTime);
+							drivingx = false;
+						};
+						
+
+						drivingx = true;
+						new Thread(r).start();
+						
+						// if (right)
+						// Car.this.display.lookRight();
+						// else
+						// Car.this.display.lookLeft();
+
+					}
+					
+					
+					int yDiff = markerCenter.getY() - camCenter.getY();
+					
+					if (Math.abs(yDiff) > 50) {
+						boolean direction = yDiff > 0;
+						
+						Runnable r = () -> {
+							if (direction)
+								camTower.camDownNoCapturing();
+							else 
+								camTower.camUpNoCapturing();
+							RovyUtility.sleep(100);
+							drivingy = false;
+						};
+						
+
+						drivingy = true;
+						new Thread(r).start();
+						
+						// if (right)
+						// Car.this.display.lookRight();
+						// else
+						// Car.this.display.lookLeft();
+
+					}
+					
+//					if (!Objects.equals(direction, lastDirection)) {
+//						rightWheel.stop();
+//						leftWheel.stop();
+//						RovyUtility.sleep(40);
+//						if (direction != null) {
+//							rightWheel.start(!direction, 50);
+//							leftWheel.start(direction, 50);
+//						}
+//					}
+					
+					
+	
+//					else {
+//						rightWheel.stop();
+//						leftWheel.stop();;
+//					}
+					
+//					lastDirection = direction;
+				} 
+//				else {
+//					rightWheel.stop();
+//					leftWheel.stop();
+//					lastDirection = null;
+//				} 
+				RovyUtility.sleep(1);
+			}
+			camTower.getCam().switchLightOff();
+			detector.releaseCamera();
 			Car.this.markerFollower = null;
 		}
 		
@@ -51,14 +165,16 @@ public class Car {
 		
 	};
 	
+	
+	
 	public boolean isMarkerFollowingMode() {
 		return markerFollower != null;
 	}
 	
-	public void startMarkerFollowingMode() {
+	public void startMarkerFollowingMode(CamTower cam) {
 		if (isMarkerFollowingMode())
 			throw new IllegalStateException("stop marker following mode first");
-		markerFollower = new MarkerFollower();
+		markerFollower = new MarkerFollower(cam);
 		new Thread(markerFollower).start();	
 	}
 	
@@ -506,6 +622,8 @@ public class Car {
 	}
 	
 	public void fillTelemetryData(String prefix, RovyTelemetryData telemetryData) {
+		
+		telemetryData.getEntries().add(prefix + "markerFollowingMode: " + isMarkerFollowingMode());
 		rightWheel.fillTelemetryData(prefix + "rightWheel: ", telemetryData);
 		leftWheel.fillTelemetryData(prefix + "leftWheel: ", telemetryData);
 	}
