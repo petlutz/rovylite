@@ -31,6 +31,18 @@ public class Point {
 		this.y = y;
 	}
 	
+	public Point add(Point other) {
+		x += other.x;
+		y += other.y;
+		return this;
+	}
+	
+	public Point mult(float factor) {
+		x *= factor;
+		y *= factor;
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		return "(x=" + x + ",y=" + y + ")";

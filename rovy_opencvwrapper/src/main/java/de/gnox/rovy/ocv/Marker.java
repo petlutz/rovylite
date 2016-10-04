@@ -9,6 +9,8 @@ public class Marker {
 	
 	private List<Point> points = new ArrayList<>(4);
 	
+	private Point center;
+	
 	public Marker() {
 	}
 
@@ -37,6 +39,17 @@ public class Marker {
 	public String toString() {
 		return "value=" + value + ",Points:"
 				+ points.stream().map(item -> item.toString()).reduce((a, b) -> a + b ).orElse("");
+	}
+	
+	public Point getCenter() {
+		if (center == null) {
+			Point newCenter = points.stream()
+					.reduce((a,b) -> a.add(b))
+					.orElse(new Point(0,0));
+			newCenter.mult(1.0f / points.size());
+			center = newCenter;
+		}
+		return center;
 	}
 	
 }
