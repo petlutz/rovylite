@@ -48,10 +48,6 @@ public class Car {
 		
 		boolean stop = false;
 		
-//		boolean drivingx = false;
-//		boolean drivingy = false;
-//		boolean drivingz = false;
-		
 		@Override
 		public void run() {
 			MarkerDetector detector = new MarkerDetector(false, 0, ArucoDictionary.DICT_4X4_250);
@@ -74,28 +70,13 @@ public class Car {
 						
 						boolean direction = xDiff > 0;
 						
-						//Runnable r = () -> {
 							rightWheel.start(!direction, 100);
 							leftWheel.start(direction, 100);
 							int time = Math.abs(xDiff) / 3;
 							RovyUtility.sleep(time);
 							rightWheel.stop();
 							leftWheel.stop();
-							
-//							int restTime = 100 - time;
-//							if (restTime > 0)
-//								RovyUtility.sleep(restTime);
-							//drivingx = false;
-						//};
-						
 
-//						drivingx = true;
-//						new Thread(r).start();
-						
-						// if (right)
-						// Car.this.display.lookRight();
-						// else
-						// Car.this.display.lookLeft();
 
 					} else {
 					
@@ -104,17 +85,8 @@ public class Car {
 
 							int cm = sizeDiff;
 
-//							Runnable r = () -> {
-//							long startTime = System.currentTimeMillis();
 							driveNewInternal(cm, null);
-//							int restTime = 100 - (int) (System.currentTimeMillis() - startTime);
-//							if (restTime > 0)
-//								RovyUtility.sleep(restTime);
-////								drivingz = false;
-////							};
 
-//							drivingz = true;
-//							new Thread(r).start();
 						}
 					
 					}
@@ -125,46 +97,17 @@ public class Car {
 					if (Math.abs(yDiff) > 50) {
 						boolean direction = yDiff > 0;
 						
-//						Runnable r = () -> {
 							if (direction)
 								camTower.camDownNoCapturing();
 							else 
 								camTower.camUpNoCapturing();
 							RovyUtility.sleep(100);
-//							drivingy = false;
-//						};
-						
 
-//						drivingy = true;
-//						new Thread(r).start();
-						
 					}
 					
 					
-//					if (!Objects.equals(direction, lastDirection)) {
-//						rightWheel.stop();
-//						leftWheel.stop();
-//						RovyUtility.sleep(40);
-//						if (direction != null) {
-//							rightWheel.start(!direction, 50);
-//							leftWheel.start(direction, 50);
-//						}
-//					}
-					
-					
-	
-//					else {
-//						rightWheel.stop();
-//						leftWheel.stop();;
-//					}
-					
-//					lastDirection = direction;
 				} 
-//				else {
-//					rightWheel.stop();
-//					leftWheel.stop();
-//					lastDirection = null;
-//				} 
+				
 				RovyUtility.sleep(100);
 			}
 			camTower.getCam().switchLightOff();
