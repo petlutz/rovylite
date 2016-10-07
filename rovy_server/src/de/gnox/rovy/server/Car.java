@@ -7,8 +7,8 @@ import java.util.Optional;
 import com.pi4j.io.gpio.RaspiPin;
 
 import de.gnox.rovy.api.RovyTelemetryData;
-import de.gnox.rovy.ocv.Dictionary;
-import de.gnox.rovy.ocv.Marker;
+import de.gnox.rovy.ocv.ArucoDictionary;
+import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.MarkerDetector;
 import de.gnox.rovy.ocv.Point;
 
@@ -48,23 +48,21 @@ public class Car {
 		
 		boolean stop = false;
 		
-		boolean drivingx = false;
-		boolean drivingy = false;
-		boolean drivingz = false;
+//		boolean drivingx = false;
+//		boolean drivingy = false;
+//		boolean drivingz = false;
 		
 		@Override
 		public void run() {
-			MarkerDetector detector = new MarkerDetector();
-			detector.init(false, 0, Dictionary.DICT_4X4_250);
-			
-			Point camCenter = new Point(340, 220);
-			
+			MarkerDetector detector = new MarkerDetector(false, 0, ArucoDictionary.DICT_4X4_250);
+			detector.startCapturing();
+			Point camCenter = new Point(340, 220);	
 			camTower.getCam().switchLightOn();
 			while (!stop) {
 				
-				Collection<Marker> markers = detector.detectMarkers();
-				Optional<Marker> marker42 = markers.stream().filter(marker -> marker.getValue() == 42).findAny();
-				if (!drivingx && !drivingy && !drivingz && marker42.isPresent()) {
+				Collection<ArucoMarker> markers = detector.detectMarkers();
+				Optional<ArucoMarker> marker42 = markers.stream().filter(marker -> marker.getValue() == 42).findAny();
+				if (marker42.isPresent()) {
 					
 					Point markerCenter = marker42.get().getCenter();
 					System.out.println("Marker 42 detected: " + markerCenter + " " + marker42.get().getSize());
@@ -76,7 +74,7 @@ public class Car {
 						
 						boolean direction = xDiff > 0;
 						
-						Runnable r = () -> {
+						//Runnable r = () -> {
 							rightWheel.start(!direction, 100);
 							leftWheel.start(direction, 100);
 							int time = Math.abs(xDiff) / 3;
@@ -84,15 +82,15 @@ public class Car {
 							rightWheel.stop();
 							leftWheel.stop();
 							
-							int restTime = 100 - time;
-							if (restTime > 0)
-								RovyUtility.sleep(restTime);
-							drivingx = false;
-						};
+//							int restTime = 100 - time;
+//							if (restTime > 0)
+//								RovyUtility.sleep(restTime);
+							//drivingx = false;
+						//};
 						
 
-						drivingx = true;
-						new Thread(r).start();
+//						drivingx = true;
+//						new Thread(r).start();
 						
 						// if (right)
 						// Car.this.display.lookRight();
@@ -106,42 +104,42 @@ public class Car {
 
 							int cm = sizeDiff;
 
-							Runnable r = () -> {
-								long startTime = System.currentTimeMillis();
-								driveNewInternal(cm, null);
-								int restTime = 100 - (int) (System.currentTimeMillis() - startTime);
-								if (restTime > 0)
-									RovyUtility.sleep(restTime);
-								drivingz = false;
-							};
+//							Runnable r = () -> {
+//							long startTime = System.currentTimeMillis();
+							driveNewInternal(cm, null);
+//							int restTime = 100 - (int) (System.currentTimeMillis() - startTime);
+//							if (restTime > 0)
+//								RovyUtility.sleep(restTime);
+////								drivingz = false;
+////							};
 
-							drivingz = true;
-							new Thread(r).start();
+//							drivingz = true;
+//							new Thread(r).start();
 						}
 					
 					}
 					
-					/*
+					
 					int yDiff = markerCenter.getY() - camCenter.getY();
 					
 					if (Math.abs(yDiff) > 50) {
 						boolean direction = yDiff > 0;
 						
-						Runnable r = () -> {
+//						Runnable r = () -> {
 							if (direction)
 								camTower.camDownNoCapturing();
 							else 
 								camTower.camUpNoCapturing();
 							RovyUtility.sleep(100);
-							drivingy = false;
-						};
+//							drivingy = false;
+//						};
 						
 
-						drivingy = true;
-						new Thread(r).start();
+//						drivingy = true;
+//						new Thread(r).start();
 						
 					}
-					*/
+					
 					
 //					if (!Objects.equals(direction, lastDirection)) {
 //						rightWheel.stop();
@@ -167,10 +165,10 @@ public class Car {
 //					leftWheel.stop();
 //					lastDirection = null;
 //				} 
-				RovyUtility.sleep(1);
+				RovyUtility.sleep(100);
 			}
 			camTower.getCam().switchLightOff();
-			detector.releaseCamera();
+			detector.stopCapturing();
 			Car.this.markerFollower = null;
 		}
 		

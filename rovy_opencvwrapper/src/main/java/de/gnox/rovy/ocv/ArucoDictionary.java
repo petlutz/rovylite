@@ -1,6 +1,6 @@
 package de.gnox.rovy.ocv;
 
-public enum Dictionary {
+public enum ArucoDictionary {
 	
 	DICT_4X4_50(0), 
 	DICT_4X4_100(1), 
@@ -20,7 +20,7 @@ public enum Dictionary {
 	DICT_7X7_1000(15), 
 	DICT_ARUCO_ORIGINAL(16);
 
-	private Dictionary(int id) {
+	private ArucoDictionary(int id) {
 		this.id = id;
 	}
 

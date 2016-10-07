@@ -3,7 +3,7 @@ package de.gnox.rovy.ocv;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Marker {
+public class ArucoMarker {
 	
 	private int value;
 	
@@ -13,10 +13,10 @@ public class Marker {
 	
 	private Integer size;
 	
-	public Marker() {
+	public ArucoMarker() {
 	}
 
-	public Marker(int value) {
+	public ArucoMarker(int value) {
 		super();
 		this.value = value;
 	}

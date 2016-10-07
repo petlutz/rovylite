@@ -178,6 +178,7 @@ public class Rovy {
 				break;
 			case MarkerFollowingOff:
 				car.stopMarkerFollowingMode();
+				break;
 			default:
 				throw new RovyException("unknown command");
 			}
