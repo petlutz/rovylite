@@ -46,14 +46,14 @@ public class Rovy {
 		if (cm == null)
 			throw new RovyException("cm is empty");
 		// car.driveNew( Float.parseFloat(meters), getCam() );
-		car.driveNew(Integer.parseInt(cm), getCam(), display);
+		car.drive(Integer.parseInt(cm), getCam(), display);
 	}
 
 	public void turn(RovyCommand command) throws NumberFormatException, RovyException {
 		String degrees = command.getParameter("degrees");
 		if (degrees == null)
 			throw new RovyException("degrees is empty");
-		car.turnNew(Float.parseFloat(degrees), getCam(), display);
+		car.turn(Float.parseFloat(degrees), getCam(), display);
 	}
 
 	public void turnFwd(RovyCommand command) throws NumberFormatException, RovyException {
