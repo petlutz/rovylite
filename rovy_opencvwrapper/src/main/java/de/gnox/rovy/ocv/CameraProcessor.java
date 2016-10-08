@@ -14,7 +14,7 @@ public class CameraProcessor {
 
 	private int cam;
 
-	AtomicBoolean stopNow = new AtomicBoolean(false);
+	AtomicBoolean stopCapturingNow = new AtomicBoolean(false);
 
 	AtomicBoolean capturing = new AtomicBoolean(false);
 
@@ -27,19 +27,23 @@ public class CameraProcessor {
 		this.cam = cam;
 		this.debug = debug;
 	}
+	
+	public RovyOpenCVWrapper getOpenCVWrapper() {
+		return ocv;
+	}
 
 	public void startCapturing() {
 		if (capturing.get())
 			throw new IllegalStateException();
 		capturingRunnable = new CapturingRunnable();
 		capturing.set(true);
-		stopNow.set(false);
+		stopCapturingNow.set(false);
 		new Thread(capturingRunnable).start();
 	}
 
 	public void stopCapturing() {
 		capturingRunnable = null;
-		stopNow.set(true);
+		stopCapturingNow.set(true);
 	}
 	
 	public <T> T processUpcommingFrame(Callable<T> callable) {
@@ -60,9 +64,9 @@ public class CameraProcessor {
 	public Collection<ArucoMarker> detectArcucoMarkers(ArucoDictionary markerDict) {
 		
 		Collection<ArucoMarker> result = processUpcommingFrame(() -> {
-			Collection<ArucoMarker> markers = ocv.arucoDetectMarkers(markerDict);
+			Collection<ArucoMarker> markers = getOpenCVWrapper().arucoDetectMarkers(markerDict);
 			if (debug) 
-				ocv.arucoDrawDetectedMarkers();
+				getOpenCVWrapper().arucoDrawDetectedMarkers();
 			return markers;
 		});
 		
@@ -86,7 +90,7 @@ public class CameraProcessor {
 
 			ocv.openVideoCapture(cam, debug);
 
-			while (!stopNow.get()) {
+			while (!stopCapturingNow.get()) {
 				
 				long startTime = System.currentTimeMillis();
 
