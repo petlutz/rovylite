@@ -9,7 +9,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import de.gnox.rovy.api.RovyTelemetryData;
 import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
-import de.gnox.rovy.ocv.MarkerDetector;
+import de.gnox.rovy.ocv.CameraProcessor;
 import de.gnox.rovy.ocv.Point;
 
 public class Car {
@@ -50,8 +50,8 @@ public class Car {
 
 		@Override
 		public void run() {
-			MarkerDetector detector = new MarkerDetector(false, 0, ArucoDictionary.DICT_4X4_250);
-			detector.startCapturing();
+			CameraProcessor camera = new CameraProcessor(false, 0);
+			camera.startCapturing();
 			Point camCenter = new Point(340, 220);
 			camTower.getCam().switchLightOn();
 
@@ -61,7 +61,7 @@ public class Car {
 
 			while (!stop) {
 
-				Collection<ArucoMarker> markers = detector.detectMarkers();
+				Collection<ArucoMarker> markers = camera.detectArcucoMarkers(ArucoDictionary.DICT_4X4_250);
 				long startTime = System.currentTimeMillis();
 				
 				Optional<ArucoMarker> marker42 = markers.stream().filter(marker -> marker.getValue() == 42).findAny();
@@ -126,7 +126,7 @@ public class Car {
 				RovyUtility.sleep(sleepTime);
 			}
 			camTower.getCam().switchLightOff();
-			detector.stopCapturing();
+			camera.stopCapturing();
 			Car.this.markerFollower = null;
 		}
 

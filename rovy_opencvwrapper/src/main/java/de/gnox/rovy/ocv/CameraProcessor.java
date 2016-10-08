@@ -2,12 +2,13 @@ package de.gnox.rovy.ocv;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MarkerDetector {
+public class CameraProcessor {
 
 	private boolean debug;
 
@@ -17,22 +18,14 @@ public class MarkerDetector {
 
 	AtomicBoolean capturing = new AtomicBoolean(false);
 
-//
-//	AtomicBoolean detectNow = new AtomicBoolean(false);
-//
-//	AtomicReference<Collection<ArucoMarker>> detectedMarkers = new AtomicReference<Collection<ArucoMarker>>(null);
-
 	private RovyOpenCVWrapper ocv;
-
-	private ArucoDictionary markerDict;
 
 	private CapturingRunnable capturingRunnable;
 	
-	public MarkerDetector(boolean debug, int cam, ArucoDictionary markerDict) {
+	public CameraProcessor(boolean debug, int cam) {
 		ocv = new RovyOpenCVWrapper();
 		this.cam = cam;
 		this.debug = debug;
-		this.markerDict = markerDict;
 	}
 
 	public void startCapturing() {
@@ -48,26 +41,35 @@ public class MarkerDetector {
 		capturingRunnable = null;
 		stopNow.set(true);
 	}
-
-	public Collection<ArucoMarker> detectMarkers() {
-		
+	
+	public <T> T processUpcommingFrame(Callable<T> callable) {
 		if (capturingRunnable == null) 
-			return Collections.emptyList();
+			return null;
 		
-		FutureTask<Collection<ArucoMarker>> futureTask = new FutureTask<>(() -> {
-			Collection<ArucoMarker> markers = ocv.arucoDetectMarkers(markerDict);
-			if (debug) 
-				ocv.arucoDrawDetectedMarkers();
-			return markers;
-		});
+		FutureTask<T> futureTask = new FutureTask<>(callable);
 		
 		capturingRunnable.setNextFrameFutureTask(futureTask);
 		
 		try {
 			return futureTask.get(10, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			return Collections.emptyList();
+			return null;
 		}
+	}
+
+	public Collection<ArucoMarker> detectArcucoMarkers(ArucoDictionary markerDict) {
+		
+		Collection<ArucoMarker> result = processUpcommingFrame(() -> {
+			Collection<ArucoMarker> markers = ocv.arucoDetectMarkers(markerDict);
+			if (debug) 
+				ocv.arucoDrawDetectedMarkers();
+			return markers;
+		});
+		
+		if (result == null)
+			return Collections.emptyList();
+		return result;
+		
 	}
 
 	private class CapturingRunnable implements Runnable {
@@ -105,7 +107,6 @@ public class MarkerDetector {
 						sleepTime = 1;
 					TimeUnit.MILLISECONDS.sleep(sleepTime);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
