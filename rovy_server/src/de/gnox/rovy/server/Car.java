@@ -69,38 +69,74 @@ public class Car {
 				rightWheel.stop();
 				leftWheel.stop();
 				
+//				Boolean rotDirection = null;
+//				Boolean driveDirection = null;
+				
 				if (marker42.isPresent()) {
 
 					Point markerCenter = marker42.get().getCenter();
 					System.out.println("Marker 42 detected: " + markerCenter + " " + marker42.get().getSize());
 
 					int xDiff = markerCenter.getX() - camCenter.getX();
+					int xDiffAbs = Math.abs(xDiff);
+					
+//					if (Math.abs(xDiff) > 50) {
+//
+//							rotDirection = xDiff > 0;
+//
+//
+//		
+//					} 
 
-					if (Math.abs(xDiff) > 50) {
-
-							boolean direction = xDiff > 0;
-							rightWheel.start(!direction, 70);
-							leftWheel.start(direction, 70);
-							RovyUtility.sleep(100);
-							rightWheel.stop();
-							leftWheel.stop();
-
-		
-					} else {
-
-						int sizeDiff = 70 - marker42.get().getSize();
-						if (Math.abs(sizeDiff) > 20) {
-
-								boolean direction = sizeDiff > 0;
-								rightWheel.start(direction, 100);
-								leftWheel.start(direction, 100);
-								RovyUtility.sleep(100);
-//								rightWheel.stop();
-//								leftWheel.stop();
+					int zDiff = 70 - marker42.get().getSize();
+					int zDiffAbs = Math.abs(zDiff);
+//					if (Math.abs(zDiff) > 20) {
+//
+//						driveDirection = zDiff > 0;
+//
+//						// rightWheel.stop();
+//						// leftWheel.stop();
+//
+//					}
+					
+					
+					
+					if (xDiffAbs > 50 && xDiffAbs < 200 && zDiffAbs > 20) {
 						
-						} 
-
+						Wheel fastWheel = rightWheel;
+						Wheel slowWheel = leftWheel;
+						if (zDiff > 0) {
+							if (xDiff > 0) {
+								fastWheel = leftWheel;
+								slowWheel = rightWheel;
+							} 
+						} else {
+							if (xDiff < 0) {
+								fastWheel = leftWheel;
+								slowWheel = rightWheel;
+							} 
+						}
+						
+						fastWheel.start(zDiff > 0, 100);
+						slowWheel.start(zDiff > 0, 70);
+						RovyUtility.sleep(100);
+						
+					} else if (xDiffAbs <= 50 && zDiffAbs > 20) {
+						boolean direction = zDiff > 0;
+						rightWheel.start(direction, 100);
+						leftWheel.start(direction, 100);
+						RovyUtility.sleep(100);
+					} else if (xDiffAbs > 50) {
+						boolean direction = xDiff > 0;
+						rightWheel.start(!direction, 70);
+						leftWheel.start(direction, 70);
+						RovyUtility.sleep(100);
+						rightWheel.stop();
+						leftWheel.stop();
 					}
+					
+					
+					
 
 					int yDiff = markerCenter.getY() - camCenter.getY();
 
