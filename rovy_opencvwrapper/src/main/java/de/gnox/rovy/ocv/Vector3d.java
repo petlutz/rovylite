@@ -30,11 +30,11 @@ public class Vector3d {
 	}
 
 	public double getZ() {
-		return vector[1];
+		return vector[2];
 	}
 
 	public void setZ(double z) {
-		vector[1] = z;
+		vector[2] = z;
 	}
 
 	@Override

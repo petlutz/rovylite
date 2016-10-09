@@ -159,7 +159,8 @@ public class Rovy {
 				camTower.getCam().useLight(false);
 				break;
 			case Dance:
-				 car.dance(getCam());
+				car.driveToCharger(camTower, display);
+				 //car.dance(getCam());
 				// replayCommandHistory();
 				// car.driveStepped(10, getCam());
 				break;

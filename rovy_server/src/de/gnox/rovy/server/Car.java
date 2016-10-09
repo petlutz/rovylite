@@ -10,6 +10,7 @@ import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.CameraProcessor;
 import de.gnox.rovy.ocv.Point2i;
+import de.gnox.rovy.ocv.Vector3d;
 
 public class Car {
 
@@ -43,7 +44,7 @@ public class Car {
 		@Override
 		public void run() {
 			CameraProcessor camera = new CameraProcessor(false, 0);
-			camera.initAruco(ArucoDictionary.DICT_4X4_250);
+			camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 0.1f);
 			camera.startCapturing();
 			Point2i camCenter = new Point2i(340, 220);
 			camTower.getCam().switchLightOn();
@@ -54,7 +55,10 @@ public class Car {
 				long startTime = System.currentTimeMillis();
 				
 				Optional<ArucoMarker> marker42 = markers.stream().filter(marker -> marker.getId() == 42).findAny();
-
+				
+//				if (marker42.isPresent())
+//					System.out.println("Marker 42: " + marker42.get().getTranslationVector());
+				
 				rightWheel.stop();
 				leftWheel.stop();
 				
@@ -133,6 +137,67 @@ public class Car {
 		}
 
 	};
+	
+	
+	private Optional<ArucoMarker> searchMarker(int markerId, Cam cam, I2cDisplay display) throws RovyException {
+		
+		cam.switchLightOn();
+		
+		CameraProcessor camera = new CameraProcessor(false, 0);
+		camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
+		camera.startCapturing();
+		
+		Optional<ArucoMarker> marker = Optional.empty();
+		
+		float stepDegrees = 40;
+		for (int i = 0; i < (360 / stepDegrees); i++) {
+			
+			Collection<ArucoMarker> detectedMarkers = camera.detectArucoMarkers();
+			marker = detectedMarkers.stream().filter(m -> m.getId() == markerId).findAny();
+			if (marker.isPresent())
+				break;
+
+			turnInternal(stepDegrees, display);
+			RovyUtility.sleep(200);
+			
+		}
+		
+		camera.stopCapturing();
+		
+		cam.switchLightOff();
+		return marker;
+	}
+	
+	public void driveToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
+		
+		camTower.lookForeward();
+		
+		Optional<ArucoMarker> marker = searchMarker(42, camTower.getCam(), display);
+		if (!marker.isPresent())
+			return;
+		
+		Vector3d targetPosition = marker.get().getTranslationVector();
+		
+		driveToPosition(targetPosition.getX(), targetPosition.getZ(),  display);
+		
+	}
+
+	private void driveToPosition(double x, double z,  I2cDisplay display) throws RovyException {
+		
+		double aRad = Math.atan(x / z);
+		double aDeg = aRad * (double)360 / ((double)2 * Math.PI);
+		
+		turnInternal((float)aDeg, display);
+		
+		RovyUtility.sleep(100);
+		
+		double dist = Math.sqrt( x*x + z*z);
+		
+		
+		System.out.println("drive to position: x=" + x + " z=" + z + " a=" + aDeg  );
+		driveInternal((int)dist,  display);
+		
+	}
 
 	public boolean isMarkerFollowingMode() {
 		return markerFollower != null;
@@ -244,7 +309,11 @@ public class Car {
 			throw new IllegalStateException("stop marker following mode first");
 
 		cam.startCapturing();
+		turnInternal(degrees, display);
+		cam.finishCapturing();
+	}
 
+	private void turnInternal(float degrees, I2cDisplay display) {
 		int speed = 0;
 		boolean right = degrees > 0;
 
@@ -278,7 +347,6 @@ public class Car {
 		}
 		stopNow();
 
-		cam.finishCapturing();
 		display.lookNormal();
 	}
 
