@@ -43,13 +43,14 @@ public class Car {
 		@Override
 		public void run() {
 			CameraProcessor camera = new CameraProcessor(false, 0);
+			camera.initAruco(ArucoDictionary.DICT_4X4_250);
 			camera.startCapturing();
 			Point camCenter = new Point(340, 220);
 			camTower.getCam().switchLightOn();
 
 			while (!stop) {
 
-				Collection<ArucoMarker> markers = camera.detectArcucoMarkers(ArucoDictionary.DICT_4X4_250);
+				Collection<ArucoMarker> markers = camera.detectArucoMarkers();
 				long startTime = System.currentTimeMillis();
 				
 				Optional<ArucoMarker> marker42 = markers.stream().filter(marker -> marker.getId() == 42).findAny();

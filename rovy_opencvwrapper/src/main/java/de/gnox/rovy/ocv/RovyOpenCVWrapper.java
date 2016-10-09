@@ -11,9 +11,9 @@ public class RovyOpenCVWrapper {
 		System.loadLibrary("rovyocv");
 	}
 
-	public Collection<ArucoMarker> arucoDetectMarkers(ArucoDictionary markerDict) {
+	public Collection<ArucoMarker> arucoDetectMarkers() {
 		
-		int detectedMarkers = nArucoDetectMarkers(markerDict.getId());
+		int detectedMarkers = nArucoDetectMarkers();
 		
 		if (detectedMarkers == 0)
 			return Collections.emptyList();
@@ -33,7 +33,13 @@ public class RovyOpenCVWrapper {
 		return resultList;
 	}
 	
-	private native int nArucoDetectMarkers(int markerDict);
+	public void arucoInit(ArucoDictionary dict) {
+		nArucoInit(dict.getId());
+	}
+	
+	private native int nArucoInit(int markerDict);
+	
+	private native int nArucoDetectMarkers();
 
 	private native int[] nArucoGetMarkerCorners(int markerIndex);
 	

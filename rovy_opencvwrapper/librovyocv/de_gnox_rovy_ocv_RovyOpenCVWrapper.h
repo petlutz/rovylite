@@ -9,11 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
- * Method:    nArucoDetectMarkers
+ * Method:    nArucoInit
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarkers
+JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInit
   (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
+ * Method:    nArucoDetectMarkers
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarkers
+  (JNIEnv *, jobject);
 
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper

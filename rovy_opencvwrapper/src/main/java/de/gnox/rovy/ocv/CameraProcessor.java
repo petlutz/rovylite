@@ -22,6 +22,8 @@ public class CameraProcessor {
 
 	private CapturingRunnable capturingRunnable;
 	
+	private boolean arucoInitialized = false;
+	
 	public CameraProcessor(boolean debug, int cam) {
 		ocv = new RovyOpenCVWrapper();
 		this.cam = cam;
@@ -60,11 +62,18 @@ public class CameraProcessor {
 			return null;
 		}
 	}
+	
+	public void initAruco(ArucoDictionary dict) {
+		getOpenCVWrapper().arucoInit(dict);
+		arucoInitialized = true;
+	}
 
-	public Collection<ArucoMarker> detectArcucoMarkers(ArucoDictionary markerDict) {
+	public Collection<ArucoMarker> detectArucoMarkers() {
+		if (!arucoInitialized)
+			throw new IllegalStateException("aruco not initialized");
 		
 		Collection<ArucoMarker> result = processUpcommingFrame(() -> {
-			Collection<ArucoMarker> markers = getOpenCVWrapper().arucoDetectMarkers(markerDict);
+			Collection<ArucoMarker> markers = getOpenCVWrapper().arucoDetectMarkers();
 			if (debug) 
 				getOpenCVWrapper().arucoDrawDetectedMarkers();
 			return markers;
