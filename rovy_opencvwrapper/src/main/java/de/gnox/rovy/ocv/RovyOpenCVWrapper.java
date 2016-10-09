@@ -1,9 +1,9 @@
 package de.gnox.rovy.ocv;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class RovyOpenCVWrapper {
 
@@ -13,42 +13,32 @@ public class RovyOpenCVWrapper {
 
 	public Collection<ArucoMarker> arucoDetectMarkers(ArucoDictionary markerDict) {
 		
-		int markerData[] = nArucoDetectMarkers(markerDict.getId());
+		int detectedMarkers = nArucoDetectMarkers(markerDict.getId());
 		
-		if (markerData.length == 0)
+		if (detectedMarkers == 0)
 			return Collections.emptyList();
 		
-		
-		Map<Integer, ArucoMarker> resultMap = new HashMap<>();
-		int i = 0;
-		while (true) {
-			
-			if (i + 4 > markerData.length)
-				break;
-			
-			int markerIdx = markerData[i++];
-			int markerValue = markerData[i++];
-			int markerPointX = markerData[i++];
-			int markerPointY = markerData[i++];
-			
-			if (markerIdx == -1 || markerValue == -1 || markerPointX == -1 || markerPointY == -1)
-				break;
-			
-			ArucoMarker marker = resultMap.get(markerIdx);
-			if (marker == null) {
-				marker = new ArucoMarker(markerValue);
-				resultMap.put(markerIdx, marker);
-			}
-			
-			marker.getPoints().add(new Point(markerPointX, markerPointY));
-			
+		List<ArucoMarker> resultList = new ArrayList<>(detectedMarkers);
+	
+		for (int markerIdx = 0; markerIdx < detectedMarkers; markerIdx++) {
+			ArucoMarker marker = new ArucoMarker(nArucoGetMarkerId(markerIdx));
+			int[] markerCornersData = nArucoGetMarkerCorners(markerIdx);
+			if (markerCornersData.length % 2 != 0)
+				throw new RuntimeException("error in marker corners data");
+			for (int i = 0; i < markerCornersData.length; i += 2)
+				marker.getCorners().add(new Point(markerCornersData[i], markerCornersData[i + 1]));
+			resultList.add(marker);
 		}
-		
-		return resultMap.values();
+
+		return resultList;
 	}
 	
-	private native int[] nArucoDetectMarkers(int markerDict);
+	private native int nArucoDetectMarkers(int markerDict);
 
+	private native int[] nArucoGetMarkerCorners(int markerIndex);
+	
+	private native int nArucoGetMarkerId(int markerIndex);
+ 	
 	public void arucoDrawDetectedMarkers() {
 		nArucoDrawDetectedMarkers();
 	}

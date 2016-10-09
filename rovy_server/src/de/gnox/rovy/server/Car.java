@@ -52,7 +52,7 @@ public class Car {
 				Collection<ArucoMarker> markers = camera.detectArcucoMarkers(ArucoDictionary.DICT_4X4_250);
 				long startTime = System.currentTimeMillis();
 				
-				Optional<ArucoMarker> marker42 = markers.stream().filter(marker -> marker.getValue() == 42).findAny();
+				Optional<ArucoMarker> marker42 = markers.stream().filter(marker -> marker.getId() == 42).findAny();
 
 				rightWheel.stop();
 				leftWheel.stop();

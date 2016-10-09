@@ -10,9 +10,25 @@ extern "C" {
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
  * Method:    nArucoDetectMarkers
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarkers
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
+ * Method:    nArucoGetMarkerCorners
  * Signature: (I)[I
  */
-JNIEXPORT jintArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarkers
+JNIEXPORT jintArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerCorners
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
+ * Method:    nArucoGetMarkerId
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerId
   (JNIEnv *, jobject, jint);
 
 /*

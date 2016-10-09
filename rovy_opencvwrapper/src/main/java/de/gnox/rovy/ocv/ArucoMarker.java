@@ -5,9 +5,9 @@ import java.util.List;
 
 public class ArucoMarker {
 	
-	private int value;
+	private int id;
 	
-	private List<Point> points = new ArrayList<>(4);
+	private List<Point> corners = new ArrayList<>(4);
 	
 	private Point center;
 	
@@ -16,39 +16,39 @@ public class ArucoMarker {
 	public ArucoMarker() {
 	}
 
-	public ArucoMarker(int value) {
+	public ArucoMarker(int id) {
 		super();
-		this.value = value;
+		this.id = id;
 	}
 
-	public int getValue() {
-		return value;
+	public int getId() {
+		return id;
 	}
 	
-	public void setValue(int value) {
-		this.value = value;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public List<Point> getPoints() {
-		return points;
+	public List<Point> getCorners() {
+		return corners;
 	}
 
-	public void setPoints(List<Point> points) {
-		this.points = points;
+	public void setCorners(List<Point> points) {
+		this.corners = points;
 	}
 	
 	@Override
 	public String toString() {
-		return "value=" + value + ",Points:"
-				+ points.stream().map(item -> item.toString()).reduce((a, b) -> a + b ).orElse("");
+		return "value=" + id + ",Points:"
+				+ corners.stream().map(item -> item.toString()).reduce((a, b) -> a + b ).orElse("");
 	}
 	
 	public Point getCenter() {
 		if (center == null) {
-			Point newCenter = points.stream()
+			Point newCenter = corners.stream()
 					.reduce((a,b) -> a.add(b))
 					.orElse(new Point(0,0));
-			newCenter.mult(1.0f / points.size());
+			newCenter.mult(1.0f / corners.size());
 			center = newCenter;
 		}
 		return center;
@@ -56,8 +56,8 @@ public class ArucoMarker {
 	
 	public int getSize() {
 		if (size == null) {
-			int maxX = points.stream().map(p -> p.getX()).reduce((a, b) -> a > b ? a : b).orElse(0);
-			int minX = points.stream().map(p -> p.getX()).reduce((a, b) -> a < b ? a : b).orElse(0);
+			int maxX = corners.stream().map(p -> p.getX()).reduce((a, b) -> a > b ? a : b).orElse(0);
+			int minX = corners.stream().map(p -> p.getX()).reduce((a, b) -> a < b ? a : b).orElse(0);
 			size = maxX - minX;
 		}
 		return size;
