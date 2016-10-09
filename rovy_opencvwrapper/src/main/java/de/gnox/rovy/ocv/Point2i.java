@@ -1,15 +1,15 @@
 package de.gnox.rovy.ocv;
 
-public class Point {
+public class Point2i {
 	
 	private int x;
 	
 	private int y;
 	
-	public Point() {
+	public Point2i() {
 	}
 
-	public Point(int x, int y) {
+	public Point2i(int x, int y) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -31,13 +31,13 @@ public class Point {
 		this.y = y;
 	}
 	
-	public Point add(Point other) {
+	public Point2i add(Point2i other) {
 		x += other.x;
 		y += other.y;
 		return this;
 	}
 	
-	public Point mult(float factor) {
+	public Point2i mult(float factor) {
 		x *= factor;
 		y *= factor;
 		return this;

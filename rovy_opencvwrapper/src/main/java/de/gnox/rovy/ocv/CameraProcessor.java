@@ -3,8 +3,10 @@ package de.gnox.rovy.ocv;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,13 +60,24 @@ public class CameraProcessor {
 		
 		try {
 			return futureTask.get(10, TimeUnit.SECONDS);
-		} catch (Exception e) {
+		} catch (InterruptedException e) {
+			return null;
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		} catch (TimeoutException e) {
+			e.printStackTrace();
 			return null;
 		}
+	
 	}
 	
 	public void initAruco(ArucoDictionary dict) {
 		getOpenCVWrapper().arucoInit(dict);
+		arucoInitialized = true;
+	}
+	
+	public void initArucoWithPoseEstimation(ArucoDictionary dict, float markerLength) {
+		getOpenCVWrapper().arucoInitWithPoseEstimation(dict, markerLength);
 		arucoInitialized = true;
 	}
 

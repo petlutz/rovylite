@@ -7,9 +7,29 @@ public class ArucoMarker {
 	
 	private int id;
 	
-	private List<Point> corners = new ArrayList<>(4);
+	private List<Point2i> corners = new ArrayList<>(4);
 	
-	private Point center;
+	private Vector3d rotationVector;
+	
+	private Vector3d translationVector;
+	
+	public Vector3d getRotationVector() {
+		return rotationVector;
+	}
+
+	public void setRotationVector(Vector3d rotationVector) {
+		this.rotationVector = rotationVector;
+	}
+
+	public Vector3d getTranslationVector() {
+		return translationVector;
+	}
+
+	public void setTranslationVector(Vector3d translationVector) {
+		this.translationVector = translationVector;
+	}
+
+	private Point2i center;
 	
 	private Integer size;
 	
@@ -29,11 +49,11 @@ public class ArucoMarker {
 		this.id = id;
 	}
 
-	public List<Point> getCorners() {
+	public List<Point2i> getCorners() {
 		return corners;
 	}
 
-	public void setCorners(List<Point> points) {
+	public void setCorners(List<Point2i> points) {
 		this.corners = points;
 	}
 	
@@ -43,11 +63,11 @@ public class ArucoMarker {
 				+ corners.stream().map(item -> item.toString()).reduce((a, b) -> a + b ).orElse("");
 	}
 	
-	public Point getCenter() {
+	public Point2i getCenter() {
 		if (center == null) {
-			Point newCenter = corners.stream()
+			Point2i newCenter = corners.stream()
 					.reduce((a,b) -> a.add(b))
-					.orElse(new Point(0,0));
+					.orElse(new Point2i(0,0));
 			newCenter.mult(1.0f / corners.size());
 			center = newCenter;
 		}

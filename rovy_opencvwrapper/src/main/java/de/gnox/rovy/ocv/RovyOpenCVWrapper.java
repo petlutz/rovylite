@@ -26,10 +26,20 @@ public class RovyOpenCVWrapper {
 			if (markerCornersData.length % 2 != 0)
 				throw new RuntimeException("error in marker corners data");
 			for (int i = 0; i < markerCornersData.length; i += 2)
-				marker.getCorners().add(new Point(markerCornersData[i], markerCornersData[i + 1]));
+				marker.getCorners().add(new Point2i(markerCornersData[i], markerCornersData[i + 1]));
+			
+			double[] rVec = nArucoGetMarkerRotationVector(markerIdx);
+			double[] tVec = nArucoGetMarkerTranslationVector(markerIdx);
+			if (rVec != null)
+				marker.setRotationVector(new Vector3d(rVec));
+			if (tVec != null)
+				marker.setTranslationVector(new Vector3d(tVec));			
+			
 			resultList.add(marker);
 		}
 
+		
+		
 		return resultList;
 	}
 	
@@ -37,11 +47,21 @@ public class RovyOpenCVWrapper {
 		nArucoInit(dict.getId());
 	}
 	
+	public void arucoInitWithPoseEstimation(ArucoDictionary dict, float markerLength) {
+		nArucoInitWithPoseEstimation(dict.getId(), markerLength);
+	}
+	
 	private native int nArucoInit(int markerDict);
+	
+	private native int nArucoInitWithPoseEstimation(int markerDict, float markerLength);
 	
 	private native int nArucoDetectMarkers();
 
 	private native int[] nArucoGetMarkerCorners(int markerIndex);
+	
+	private native double[] nArucoGetMarkerRotationVector(int markerIndex);
+	
+	private native double[] nArucoGetMarkerTranslationVector(int markerIndex);
 	
 	private native int nArucoGetMarkerId(int markerIndex);
  	

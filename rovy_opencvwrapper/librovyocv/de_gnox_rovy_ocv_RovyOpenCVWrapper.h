@@ -17,6 +17,14 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInit
 
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
+ * Method:    nArucoInitWithPoseEstimation
+ * Signature: (IF)I
+ */
+JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPoseEstimation
+  (JNIEnv *, jobject, jint, jfloat);
+
+/*
+ * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
  * Method:    nArucoDetectMarkers
  * Signature: ()I
  */
@@ -29,6 +37,22 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarke
  * Signature: (I)[I
  */
 JNIEXPORT jintArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerCorners
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
+ * Method:    nArucoGetMarkerRotationVector
+ * Signature: (I)[D
+ */
+JNIEXPORT jdoubleArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerRotationVector
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
+ * Method:    nArucoGetMarkerTranslationVector
+ * Signature: (I)[D
+ */
+JNIEXPORT jdoubleArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerTranslationVector
   (JNIEnv *, jobject, jint);
 
 /*

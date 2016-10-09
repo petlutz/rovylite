@@ -9,7 +9,7 @@ import de.gnox.rovy.api.RovyTelemetryData;
 import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.CameraProcessor;
-import de.gnox.rovy.ocv.Point;
+import de.gnox.rovy.ocv.Point2i;
 
 public class Car {
 
@@ -45,7 +45,7 @@ public class Car {
 			CameraProcessor camera = new CameraProcessor(false, 0);
 			camera.initAruco(ArucoDictionary.DICT_4X4_250);
 			camera.startCapturing();
-			Point camCenter = new Point(340, 220);
+			Point2i camCenter = new Point2i(340, 220);
 			camTower.getCam().switchLightOn();
 
 			while (!stop) {
@@ -60,7 +60,7 @@ public class Car {
 				
 				if (marker42.isPresent()) {
 
-					Point markerCenter = marker42.get().getCenter();
+					Point2i markerCenter = marker42.get().getCenter();
 					System.out.println("Marker 42 detected: " + markerCenter + " " + marker42.get().getSize());
 
 					int xDiff = markerCenter.getX() - camCenter.getX();
