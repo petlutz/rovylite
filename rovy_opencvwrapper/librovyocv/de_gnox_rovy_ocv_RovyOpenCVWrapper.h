@@ -26,10 +26,10 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPos
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
  * Method:    nArucoDetectMarkers
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarkers
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
@@ -66,34 +66,10 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerId
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
  * Method:    nArucoDrawDetectedMarkers
- * Signature: ()I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDrawDetectedMarkers
-  (JNIEnv *, jobject);
-
-/*
- * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
- * Method:    nOpenVideoCapture
- * Signature: (IZ)I
- */
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nOpenVideoCapture
-  (JNIEnv *, jobject, jint, jboolean);
-
-/*
- * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
- * Method:    nGrab
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nGrab
-  (JNIEnv *, jobject);
-
-/*
- * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper
- * Method:    nImshow
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nImshow
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     de_gnox_rovy_ocv_RovyOpenCVWrapper

@@ -163,14 +163,14 @@ public class Car {
 		}
 		
 		camera.stopCapturing();
-		
 		cam.switchLightOff();
+		
 		return marker;
 	}
 	
 	public void driveToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
 		
-		camTower.lookForeward();
+		camTower.lookForeward(false);
 		
 		Optional<ArucoMarker> marker = searchMarker(42, camTower.getCam(), display);
 		if (!marker.isPresent())
@@ -178,7 +178,10 @@ public class Car {
 		
 		Vector3d targetPosition = marker.get().getTranslationVector();
 		
+		RovyUtility.sleep(200);
+		camTower.getCam().startCapturing();
 		driveToPosition(targetPosition.getX(), targetPosition.getZ(),  display);
+		camTower.getCam().finishCapturing();
 		
 	}
 
@@ -192,7 +195,6 @@ public class Car {
 		RovyUtility.sleep(100);
 		
 		double dist = Math.sqrt( x*x + z*z);
-		
 		
 		System.out.println("drive to position: x=" + x + " z=" + z + " a=" + aDeg  );
 		driveInternal((int)dist,  display);

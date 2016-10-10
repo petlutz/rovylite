@@ -49,23 +49,29 @@ public class CamTower {
 			allowedDirection = AllowedDirection.BOTH;
 	}
 		
+	public void lookForeward(boolean capturing) {
+		lookAt(70, capturing);
+	}
+	
 	public void lookForeward() {
-		lookAt(70);
+		lookForeward(true);
 	}
 	
 	public void lookToPowerbank() {
-		lookAt(20);
+		lookAt(20, true);
 	}
 
-	private void lookAt(int millis) {
-		cam.startCapturing();
+	private void lookAt(int millis, boolean capturing) {
+		if (capturing)
+			cam.startCapturing();
 		moveToDownStop();
-//		cam.clear();
+		// cam.clear();
 		RovyUtility.sleep(200);
 		camWheel.start(true, 40);
 		RovyUtility.sleep(millis);
 		camWheel.stop();
-		cam.finishCapturing();
+		if (capturing)
+			cam.finishCapturing();
 		updateAllowedDirection();
 	}
 	

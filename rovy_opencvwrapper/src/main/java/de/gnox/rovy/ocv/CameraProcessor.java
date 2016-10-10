@@ -10,7 +10,15 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.videoio.VideoCapture;
+
 public class CameraProcessor {
+	
+	static {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 
 	private boolean debug;
 
@@ -19,6 +27,8 @@ public class CameraProcessor {
 	AtomicBoolean stopCapturingNow = new AtomicBoolean(false);
 
 	AtomicBoolean capturing = new AtomicBoolean(false);
+	
+	AtomicReference<Mat> currentFrame = new AtomicReference<>();
 
 	private RovyOpenCVWrapper ocv;
 
@@ -86,9 +96,9 @@ public class CameraProcessor {
 			throw new IllegalStateException("aruco not initialized");
 		
 		Collection<ArucoMarker> result = processUpcommingFrame(() -> {
-			Collection<ArucoMarker> markers = getOpenCVWrapper().arucoDetectMarkers();
+			Collection<ArucoMarker> markers = getOpenCVWrapper().arucoDetectMarkers(currentFrame.get());
 			if (debug) 
-				getOpenCVWrapper().arucoDrawDetectedMarkers();
+				getOpenCVWrapper().arucoDrawDetectedMarkers(currentFrame.get());
 			return markers;
 		});
 		
@@ -110,19 +120,28 @@ public class CameraProcessor {
 		@Override
 		public void run() {
 
-			ocv.openVideoCapture(cam, debug);
-
+			VideoCapture cap = new VideoCapture(cam);
+			cap.open(cam);
+		    if(!cap.isOpened())
+		        throw new RuntimeException("camera errro");
+		    
+		    Mat frame = new Mat();
+			currentFrame.set(frame);
+			
 			while (!stopCapturingNow.get()) {
 				
 				long startTime = System.currentTimeMillis();
 
-				ocv.grab();
+				cap.grab();
+				
 				FutureTask<?> task = nextFrameFutureTask.get();
-				if (task != null)
+				if (task != null) {
+					cap.retrieve(frame);
 					task.run();
+				}	
 
-				if (debug) 
-					ocv.imshow();
+//				if (debug) 
+//					cap.im
 				
 					
 				try {
@@ -138,7 +157,7 @@ public class CameraProcessor {
 
 			}
 
-			ocv.releaseVideoCapture();
+			cap.release();
 
 			capturing.set(false);
 		}

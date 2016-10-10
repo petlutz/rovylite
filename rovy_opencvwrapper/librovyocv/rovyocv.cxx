@@ -31,7 +31,7 @@ bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeffs) {
     fs["distortion_coefficients"] >> distCoeffs;
     return true;
 }
-
+/*
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nOpenVideoCapture
   (JNIEnv *, jobject, jint jcam, jboolean initWindow) 
 {
@@ -65,7 +65,7 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nReleaseVideoCapt
 	cap.release();	
 	return 1;
 }
-
+*/
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPoseEstimation
   (JNIEnv *, jobject, jint markerDict, jfloat markerLength)
 {
@@ -98,13 +98,12 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInit
 }
 
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDetectMarkers
-  (JNIEnv *env, jobject) 
+  (JNIEnv *env, jobject, jlong frameAddr) 
 {
-	if (!retrieveFrameIfNeeded())
-		return -1;
+	Mat* frame = (Mat*) frameAddr;
 
     vector< vector<Point2f> > rejectedCandidates; 
-    aruco::detectMarkers(frame, arucoDictionary, arucoMarkerCorners, arucoMarkerIds, arucoParameters, rejectedCandidates);
+    aruco::detectMarkers(*frame, arucoDictionary, arucoMarkerCorners, arucoMarkerIds, arucoParameters, rejectedCandidates);
     
     if(arucoEstimatePose && arucoMarkerIds.size() > 0)
         aruco::estimatePoseSingleMarkers(arucoMarkerCorners, arucoMarkerLength, camMatrix, distCoeffs, arucoMarkerRotationVectors, arucoMarkerTranslationVectors);
@@ -173,22 +172,24 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerId
 }
 
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDrawDetectedMarkers
-  (JNIEnv *, jobject)
+  (JNIEnv *, jobject, jlong frameAddr)
 {
+
+	Mat* frame = (Mat*) frameAddr;
 
 	if (!arucoMarkerDetected)
 		return -1;
 	if (arucoMarkerIds.size() > 0) {
-		aruco::drawDetectedMarkers(frame, arucoMarkerCorners, arucoMarkerIds);
+		aruco::drawDetectedMarkers(*frame, arucoMarkerCorners, arucoMarkerIds);
 		if (arucoEstimatePose) 
 			for(unsigned int i = 0; i < arucoMarkerIds.size(); i++)
-            	aruco::drawAxis(frame, camMatrix, distCoeffs, arucoMarkerRotationVectors[i], arucoMarkerTranslationVectors[i], arucoMarkerLength * 0.5f);
+            	aruco::drawAxis(*frame, camMatrix, distCoeffs, arucoMarkerRotationVectors[i], arucoMarkerTranslationVectors[i], arucoMarkerLength * 0.5f);
 	}		
 	
 	return 0;
 }
 
-
+/*
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nImshow
   (JNIEnv *, jobject)
 {
@@ -196,6 +197,6 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nImshow
 		return -1;
 	imshow("opencv", frame);
    	waitKey(1);  
-}
+}*/
 
 

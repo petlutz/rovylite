@@ -5,15 +5,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.opencv.core.Mat;
+
 public class RovyOpenCVWrapper {
 
 	static {
 		System.loadLibrary("rovyocv");
 	}
 
-	public Collection<ArucoMarker> arucoDetectMarkers() {
+	public Collection<ArucoMarker> arucoDetectMarkers(Mat frame) {
 		
-		int detectedMarkers = nArucoDetectMarkers();
+		int detectedMarkers = nArucoDetectMarkers(frame.nativeObj);
 		
 		if (detectedMarkers == 0)
 			return Collections.emptyList();
@@ -55,7 +57,7 @@ public class RovyOpenCVWrapper {
 	
 	private native int nArucoInitWithPoseEstimation(int markerDict, float markerLength);
 	
-	private native int nArucoDetectMarkers();
+	private native int nArucoDetectMarkers(long frameMatAddr);
 
 	private native int[] nArucoGetMarkerCorners(int markerIndex);
 	
@@ -65,33 +67,33 @@ public class RovyOpenCVWrapper {
 	
 	private native int nArucoGetMarkerId(int markerIndex);
  	
-	public void arucoDrawDetectedMarkers() {
-		nArucoDrawDetectedMarkers();
+	public void arucoDrawDetectedMarkers(Mat frame) {
+		nArucoDrawDetectedMarkers(frame.nativeObj);
 	}
 
-	private native int nArucoDrawDetectedMarkers();
+	private native int nArucoDrawDetectedMarkers(long frameMatAddr);
 
-	public void openVideoCapture(int cam, boolean debug) {
-		nOpenVideoCapture(cam, debug);
-	}
+//	public void openVideoCapture(int cam, boolean debug) {
+//		nOpenVideoCapture(cam, debug);
+//	}
 	
-	private native int nOpenVideoCapture(int cam, boolean debug);
+//	private native int nOpenVideoCapture(int cam, boolean debug);
 
-	public void grab() {
-		nGrab();
-	}
+//	public void grab() {
+//		nGrab();
+//	}
 	
-	private native int nGrab();
+//	private native int nGrab();
 
-	public void imshow() {
-		nImshow();
-	}
+//	public void imshow() {
+//		nImshow();
+//	}
 
-	private native int nImshow();
+//	private native int nImshow();
 
-	public void releaseVideoCapture() {
-		nReleaseVideoCapture();
-	}
+//	public void releaseVideoCapture() {
+//		nReleaseVideoCapture();
+//	}
 	
 	private native int nReleaseVideoCapture();
 
