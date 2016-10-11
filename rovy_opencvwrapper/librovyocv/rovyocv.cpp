@@ -7,10 +7,6 @@
 using namespace std;
 using namespace cv;
 
-
-
-Mat frame;
-
 bool arucoEstimatePose = false;
 float arucoMarkerLength = 0.0;
 bool arucoMarkerDetected = false;
@@ -29,45 +25,10 @@ bool readCameraParameters(string filename, Mat &camMatrix, Mat &distCoeffs) {
     fs["distortion_coefficients"] >> distCoeffs;
     return true;
 }
-/*
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nOpenVideoCapture
-  (JNIEnv *, jobject, jint jcam, jboolean initWindow) 
-{
-	cam = jcam;
-	if (initWindow)
-    	namedWindow("opencv",WINDOW_NORMAL);
-	return cap.open(cam);
-}
 
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nGrab
-  (JNIEnv *, jobject) 
-{
-	frameRetrieved = false;
-	return cap.grab();
-}
-
-
-bool retrieveFrameIfNeeded() {
-	if (frameRetrieved) 
-		return true;
-	if (!cap.retrieve(frame))
-		return false;
-	frameRetrieved = true;
-	return true;
-}
-
-
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nReleaseVideoCapture
-  (JNIEnv *, jobject)
-{
-	cap.release();	
-	return 1;
-}
-*/
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPoseEstimation
   (JNIEnv *, jobject, jint markerDict, jfloat markerLength)
 {
-   // arucoParameters = aruco::DetectorParameters::create(); 
     arucoParameters.doCornerRefinement = true;
     arucoDictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(markerDict));
 
@@ -86,7 +47,6 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPos
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInit
   (JNIEnv *, jobject, jint markerDict)
 {
-	//arucoParameters = aruco::DetectorParameters::create(); 
     arucoParameters.doCornerRefinement = true;
     arucoDictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(markerDict));
 
@@ -186,15 +146,4 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoDrawDetecte
 	
 	return 0;
 }
-
-/*
-JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nImshow
-  (JNIEnv *, jobject)
-{
-	if (!retrieveFrameIfNeeded())
-		return -1;
-	imshow("opencv", frame);
-   	waitKey(1);  
-}*/
-
 

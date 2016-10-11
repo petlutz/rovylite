@@ -12,7 +12,7 @@ public class JniToy {
 	public static void main(String[] args) {
 		
 		CameraProcessor detector = new CameraProcessor(true, 0);
-		detector.initAruco(ArucoDictionary.DICT_4X4_250);
+		detector.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
 		detector.startCapturing();
 		
 		while (true) {
