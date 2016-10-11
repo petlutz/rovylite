@@ -27,11 +27,11 @@ public class CameraProcessor {
 
 	private int cam;
 
-	AtomicBoolean stopCapturingNow = new AtomicBoolean(false);
+	private AtomicBoolean stopCapturingNow = new AtomicBoolean(false);
 
-	AtomicBoolean capturing = new AtomicBoolean(false);
+	private AtomicBoolean capturing = new AtomicBoolean(false);
 	
-	AtomicReference<Mat> currentFrame = new AtomicReference<>();
+	private AtomicReference<Mat> currentFrame = new AtomicReference<>();
 
 	private RovyOpenCVWrapper ocv;
 
