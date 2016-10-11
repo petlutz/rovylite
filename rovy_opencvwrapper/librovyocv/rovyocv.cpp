@@ -7,17 +7,15 @@
 using namespace std;
 using namespace cv;
 
-VideoCapture cap(0);
 
-int cam = 0;
-bool frameRetrieved = false;
+
 Mat frame;
 
 bool arucoEstimatePose = false;
 float arucoMarkerLength = 0.0;
 bool arucoMarkerDetected = false;
-Ptr<aruco::DetectorParameters> arucoParameters;
-Ptr<aruco::Dictionary> arucoDictionary;
+aruco::DetectorParameters arucoParameters;
+aruco::Dictionary arucoDictionary;
 vector< int > arucoMarkerIds; 
 vector< vector<Point2f> > arucoMarkerCorners;
 vector< Vec3d > arucoMarkerRotationVectors, arucoMarkerTranslationVectors;
@@ -69,8 +67,8 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nReleaseVideoCapt
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPoseEstimation
   (JNIEnv *, jobject, jint markerDict, jfloat markerLength)
 {
-	arucoParameters = aruco::DetectorParameters::create(); 
-    arucoParameters->doCornerRefinement = true;
+   // arucoParameters = aruco::DetectorParameters::create(); 
+    arucoParameters.doCornerRefinement = true;
     arucoDictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(markerDict));
 
     bool readOk = readCameraParameters("camparam.json", camMatrix, distCoeffs);
@@ -88,8 +86,8 @@ JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInitWithPos
 JNIEXPORT jint JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoInit
   (JNIEnv *, jobject, jint markerDict)
 {
-	arucoParameters = aruco::DetectorParameters::create(); 
-    arucoParameters->doCornerRefinement = true;
+	//arucoParameters = aruco::DetectorParameters::create(); 
+    arucoParameters.doCornerRefinement = true;
     arucoDictionary = aruco::getPredefinedDictionary(aruco::PREDEFINED_DICTIONARY_NAME(markerDict));
 
 	arucoMarkerLength = 0;

@@ -1,5 +1,6 @@
 package de.gnox.rovy.ocv;
 
+import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Callable;
@@ -9,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.swing.JFrame;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -124,8 +127,21 @@ public class CameraProcessor {
 			cap.open(cam);
 		    if(!cap.isOpened())
 		        throw new RuntimeException("camera errro");
-		    
+
 		    Mat frame = new Mat();
+		    
+		    DebugPanel debugPanel = null;
+		    JFrame debugFrame = null;
+		    if (debug) {
+		    	debugPanel = new DebugPanel(frame);
+			    debugFrame = new JFrame();
+			    debugFrame.setLayout(new BorderLayout());
+			    debugFrame.add(debugPanel, BorderLayout.CENTER);
+			    debugFrame.pack();
+			    debugFrame.setSize(640, 480);
+			    debugFrame.setVisible(true);
+		    }
+		    
 			currentFrame.set(frame);
 			
 			while (!stopCapturingNow.get()) {
@@ -140,10 +156,9 @@ public class CameraProcessor {
 					task.run();
 				}	
 
-//				if (debug) 
-//					cap.im
+				if (debug) 
+					debugPanel.repaint();
 				
-					
 				try {
 					
 					long duration = System.currentTimeMillis() - startTime;
@@ -160,6 +175,10 @@ public class CameraProcessor {
 			cap.release();
 
 			capturing.set(false);
+			
+			if (debug) 
+				debugFrame.dispose();
+			
 		}
 
 	};
