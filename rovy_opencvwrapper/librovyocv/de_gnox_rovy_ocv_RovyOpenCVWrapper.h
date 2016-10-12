@@ -44,7 +44,7 @@ JNIEXPORT jintArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMar
  * Method:    nArucoGetMarkerRotationVector
  * Signature: (I)[D
  */
-JNIEXPORT jdoubleArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerRotationVector
+JNIEXPORT jdoubleArray JNICALL Java_de_gnox_rovy_ocv_RovyOpenCVWrapper_nArucoGetMarkerRotationMatrix
   (JNIEnv *, jobject, jint);
 
 /*
