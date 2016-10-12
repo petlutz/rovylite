@@ -10,7 +10,7 @@ import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.CameraProcessor;
 import de.gnox.rovy.ocv.Point2i;
-import de.gnox.rovy.ocv.Vector3d;
+import de.gnox.rovy.ocv.Vector4d;
 
 public class Car {
 
@@ -176,7 +176,7 @@ public class Car {
 		if (!marker.isPresent())
 			return;
 		
-		Vector3d targetPosition = marker.get().getTranslationVector();
+		Vector4d targetPosition = marker.get().getTranslationVector();
 		
 		RovyUtility.sleep(200);
 		camTower.getCam().startCapturing();

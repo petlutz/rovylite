@@ -3,7 +3,9 @@ package de.gnox.rovy.ocv;
 import java.awt.BorderLayout;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -32,10 +34,10 @@ public class CameraProcessor {
 	private AtomicBoolean capturing = new AtomicBoolean(false);
 	
 	private AtomicReference<Mat> currentFrame = new AtomicReference<>();
+	
+	private Deque<FutureTask<?>> futureTasksToProcess = new ConcurrentLinkedDeque<>();
 
 	private RovyOpenCVWrapper ocv;
-
-	private CapturingRunnable capturingRunnable;
 	
 	private boolean arucoInitialized = false;
 	
@@ -52,24 +54,21 @@ public class CameraProcessor {
 	public void startCapturing() {
 		if (capturing.get())
 			throw new IllegalStateException();
-		capturingRunnable = new CapturingRunnable();
 		capturing.set(true);
 		stopCapturingNow.set(false);
-		new Thread(capturingRunnable).start();
+		new Thread(new CapturingRunnable()).start();
 	}
 
 	public void stopCapturing() {
-		capturingRunnable = null;
 		stopCapturingNow.set(true);
 	}
 	
-	public <T> T processUpcommingFrame(Callable<T> callable) {
-		if (capturingRunnable == null) 
+	public <T> T processNextFrame(Callable<T> callable) {
+		if (!capturing.get()) 
 			return null;
 		
 		FutureTask<T> futureTask = new FutureTask<>(callable);
-		
-		capturingRunnable.setNextFrameFutureTask(futureTask);
+		futureTasksToProcess.push(futureTask);
 		
 		try {
 			return futureTask.get(10, TimeUnit.SECONDS);
@@ -98,7 +97,7 @@ public class CameraProcessor {
 		if (!arucoInitialized)
 			throw new IllegalStateException("aruco not initialized");
 		
-		Collection<ArucoMarker> result = processUpcommingFrame(() -> {
+		Collection<ArucoMarker> result = processNextFrame(() -> {
 			Collection<ArucoMarker> markers = getOpenCVWrapper().arucoDetectMarkers(currentFrame.get());
 			if (debug) 
 				getOpenCVWrapper().arucoDrawDetectedMarkers(currentFrame.get());
@@ -112,13 +111,6 @@ public class CameraProcessor {
 	}
 
 	private class CapturingRunnable implements Runnable {
-
-		private AtomicReference<FutureTask<?>> nextFrameFutureTask = new AtomicReference<>(null);
-		
-		public void setNextFrameFutureTask(FutureTask<?> nextFrameFutureTask) {
-			this.nextFrameFutureTask.set( nextFrameFutureTask );
-		}
-		
 		
 		@Override
 		public void run() {
@@ -149,12 +141,19 @@ public class CameraProcessor {
 				long startTime = System.currentTimeMillis();
 
 				cap.grab();
-				
-				FutureTask<?> task = nextFrameFutureTask.get();
-				if (task != null) {
+
+				if (debug)
 					cap.retrieve(frame);
-					task.run();
-				}	
+
+				if (!futureTasksToProcess.isEmpty()) {
+					
+					if (!debug)
+						cap.retrieve(frame);
+					
+					while (!futureTasksToProcess.isEmpty())
+						futureTasksToProcess.pollFirst().run();
+					
+				}
 
 				if (debug) 
 					debugPanel.repaint();

@@ -3,31 +3,38 @@ package de.gnox.rovy.ocv;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
+
 public class ArucoMarker {
 	
 	private int id;
 	
 	private List<Point2i> corners = new ArrayList<>(4);
 	
-	private Vector3d rotationVector;
+	private Matrix4d rotationMatrix;
 	
-	private Vector3d translationVector;
+	private Vector4d translationVector;
 	
-	public Vector3d getRotationVector() {
-		return rotationVector;
+	public Matrix4d getRotationMatrix() {
+		return rotationMatrix;
 	}
 
-	public void setRotationVector(Vector3d rotationVector) {
-		this.rotationVector = rotationVector;
+	public void setRotationMatrix(Matrix4d rotationVector) {
+		this.rotationMatrix = rotationVector;
 	}
 
-	public Vector3d getTranslationVector() {
+	public Vector4d getTranslationVector() {
 		return translationVector;
 	}
 
-	public void setTranslationVector(Vector3d translationVector) {
+	public void setTranslationVector(Vector4d translationVector) {
 		this.translationVector = translationVector;
 	}
+	
+	
 
 	private Point2i center;
 	

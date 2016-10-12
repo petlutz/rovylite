@@ -30,16 +30,31 @@ public class RovyOpenCVWrapper {
 			for (int i = 0; i < markerCornersData.length; i += 2)
 				marker.getCorners().add(new Point2i(markerCornersData[i], markerCornersData[i + 1]));
 			
-			double[] rVec = nArucoGetMarkerRotationVector(markerIdx);
+			double[] rMat = nArucoGetMarkerRotationMatrix(markerIdx);
 			double[] tVec = nArucoGetMarkerTranslationVector(markerIdx);
-			if (rVec != null)
-				marker.setRotationVector(new Vector3d(rVec));
-			if (tVec != null)
-				marker.setTranslationVector(new Vector3d(tVec));			
+
+			if (rMat != null) {
+				Matrix4d rMatrix = Matrix4d.createIdentityMatrix();
+				int row = 0; 
+				int col = 0;
+				for (int i = 0; i < 9; i++) {
+					rMatrix.getValues()[row][col] = rMat[i];
+					col++;
+					if (col >= 3) {
+						col = 0;
+						row ++;
+					}
+				}
+				marker.setRotationMatrix(rMatrix);
+			} 
 			
+			if (tVec != null) {
+				marker.setTranslationVector(new Vector4d(tVec[0], tVec[1], tVec[2]));			
+			}
+				
 			resultList.add(marker);
 		}
-
+		
 		
 		
 		return resultList;
@@ -52,6 +67,10 @@ public class RovyOpenCVWrapper {
 	public void arucoInitWithPoseEstimation(ArucoDictionary dict, float markerLength) {
 		nArucoInitWithPoseEstimation(dict.getId(), markerLength);
 	}
+ 	
+	public void arucoDrawDetectedMarkers(Mat frame) {
+		nArucoDrawDetectedMarkers(frame.nativeObj);
+	}
 	
 	private native int nArucoInit(int markerDict);
 	
@@ -61,40 +80,14 @@ public class RovyOpenCVWrapper {
 
 	private native int[] nArucoGetMarkerCorners(int markerIndex);
 	
-	private native double[] nArucoGetMarkerRotationVector(int markerIndex);
+	private native double[] nArucoGetMarkerRotationMatrix(int markerIndex);
 	
 	private native double[] nArucoGetMarkerTranslationVector(int markerIndex);
 	
 	private native int nArucoGetMarkerId(int markerIndex);
- 	
-	public void arucoDrawDetectedMarkers(Mat frame) {
-		nArucoDrawDetectedMarkers(frame.nativeObj);
-	}
 
 	private native int nArucoDrawDetectedMarkers(long frameMatAddr);
 
-//	public void openVideoCapture(int cam, boolean debug) {
-//		nOpenVideoCapture(cam, debug);
-//	}
-	
-//	private native int nOpenVideoCapture(int cam, boolean debug);
-
-//	public void grab() {
-//		nGrab();
-//	}
-	
-//	private native int nGrab();
-
-//	public void imshow() {
-//		nImshow();
-//	}
-
-//	private native int nImshow();
-
-//	public void releaseVideoCapture() {
-//		nReleaseVideoCapture();
-//	}
-	
 	private native int nReleaseVideoCapture();
 
 	
