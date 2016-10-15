@@ -46,6 +46,16 @@ public class Vector4d {
 	public double[] getValues() {
 		return values;
 	}
+	
+	
+	public double getLength() {
+		double result = 0.0f;
+		for (double val : values)
+			result += val * val;
+		return Math.sqrt(result);
+	}
+
+	
 	public static Vector4d createNullVector() {
 		double v[] = { 0.0d, 0.0d, 0.0d, 0.0d };
 		return new Vector4d(v);

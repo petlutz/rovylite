@@ -9,6 +9,7 @@ import de.gnox.rovy.api.RovyTelemetryData;
 import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.CameraProcessor;
+import de.gnox.rovy.ocv.Matrix4d;
 import de.gnox.rovy.ocv.Point2i;
 import de.gnox.rovy.ocv.Vector4d;
 
@@ -162,43 +163,119 @@ public class Car {
 			
 		}
 		
+
+		turnToPosition(marker.get().getTranslationVector(), display);
+		marker = camera.detectArucoMarkers().stream().filter(m -> m.getId() == markerId).findAny();
+		
 		camera.stopCapturing();
 		cam.switchLightOff();
+		
 		
 		return marker;
 	}
 	
 	public void driveToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
-		
-		camTower.lookForeward(false);
+
 		
 		Optional<ArucoMarker> marker = searchMarker(42, camTower.getCam(), display);
 		if (!marker.isPresent())
 			return;
 		
-		Vector4d targetPosition = marker.get().getTranslationVector();
+		System.out.println("Marker found at " + marker.get().getTranslationVector());
 		
-		RovyUtility.sleep(200);
-		camTower.getCam().startCapturing();
-		driveToPosition(targetPosition.getX(), targetPosition.getZ(),  display);
-		camTower.getCam().finishCapturing();
+		Matrix4d markerMatrix = marker.get().getTransformationMatrix();
+		
+		Vector4d chargerApproachPos = markerMatrix.mult(new Vector4d(0.0d, 0.0d, 100.0d));
+		driveToPosition(chargerApproachPos,  display);
+		
+		marker = searchMarker(42, camTower.getCam(), display);
+		if (!marker.isPresent())
+			return;
+
+		
+		Vector4d chargerVec = marker.get().getTranslationVector();
+		System.out.println("ANGLE TO CHARGER: " + getAngleToPosition(chargerVec.getX(), chargerVec.getZ()));
+		
+		
+
+		doChargerApproach(camTower, display);
+	}
+	
+	public void doChargerApproach(CamTower camTower, I2cDisplay display) throws RovyException {
+		
+		Optional<ArucoMarker> marker = Optional.empty();
+		CameraProcessor camera = new CameraProcessor(false, 0);
+		camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
+		camera.startCapturing();
+		
+		while (true) {
+			Collection<ArucoMarker> detectedMarkers = camera.detectArucoMarkers();
+			marker = detectedMarkers.stream().filter(m -> m.getId() == 42).findAny();
+			if (marker.isPresent()) {
+				Vector4d chargerVec = marker.get().getTranslationVector();
+				if (chargerVec.getLength() < 30) 
+					break;
+				double angle = getAngleToPosition(chargerVec.getX(), chargerVec.getZ());
+				if (angle > 5 || angle < -5) {
+					turnFwdBkw((float)angle, true, display);
+				} else {
+					driveInternal(3, display);
+				}
+				RovyUtility.sleep(50);
+
+			}
+		}
+		
+		camera.stopCapturing();
 		
 	}
+	
+	private void driveToPosition(Vector4d position3D,  I2cDisplay display) throws RovyException {
+			driveToPosition(position3D.getX(), position3D.getZ(), display);
+	}
+	
+	private void turnToPosition(Vector4d position3D,  I2cDisplay display) throws RovyException {
+		turnToPosition(position3D.getX(), position3D.getZ(), display);
+}
 
 	private void driveToPosition(double x, double z,  I2cDisplay display) throws RovyException {
 		
-		double aRad = Math.atan(x / z);
-		double aDeg = aRad * (double)360 / ((double)2 * Math.PI);
-		
-		turnInternal((float)aDeg, display);
-		
-		RovyUtility.sleep(100);
+		double turnAngle = turnToPosition(x, z, display);
 		
 		double dist = Math.sqrt( x*x + z*z);
 		
-		System.out.println("drive to position: x=" + x + " z=" + z + " a=" + aDeg  );
+		System.out.println("drive to position: x=" + x + " z=" + z  );
 		driveInternal((int)dist,  display);
 		
+		RovyUtility.sleep(100);
+		
+		turnInternal((float)-turnAngle, display);
+		
+		RovyUtility.sleep(100);
+		
+	}
+
+	private double turnToPosition(double x, double z, I2cDisplay display) {
+		
+		// Vereinfachung der Formel fuer Winkel zwischen Vectoren:
+		double aDeg = getAngleToPosition(x, z);
+		
+		System.out.println("turn to angle: " + aDeg);
+		
+		turnInternal((float)aDeg, display);
+
+		RovyUtility.sleep(100);
+		
+		return aDeg;
+	}
+
+	private double getAngleToPosition(double x, double z) {
+		double aRad = Math.acos( z / Math.sqrt(x*x + z*z));	
+	
+		double aDeg = aRad * (double)360 / ((double)2 * Math.PI);
+		if (x < 0)
+			aDeg = -aDeg;
+		return aDeg;
 	}
 
 	public boolean isMarkerFollowingMode() {

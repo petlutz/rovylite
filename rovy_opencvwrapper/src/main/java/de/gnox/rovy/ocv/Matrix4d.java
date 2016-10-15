@@ -16,7 +16,7 @@ public class Matrix4d {
 	public Matrix4d mult(Matrix4d other) {
 		double[][] mA = values;
 		double[][] mB = other.values;
-		Matrix4d result = createNullMatrix();
+		Matrix4d result = getNullMatrix();
 		double[][] mR = result.getValues();
 		
 		for (int i = 0; i < 4; i++) {
@@ -43,7 +43,7 @@ public class Matrix4d {
 		return result;
 	}
 	
-	public static Matrix4d createNullMatrix() {
+	public static Matrix4d getNullMatrix() {
 		double m[][] = {   
 				{ 0.0d, 0.0d, 0.0d, 0.0d },
                	{ 0.0d, 0.0d, 0.0d, 0.0d },
@@ -54,7 +54,7 @@ public class Matrix4d {
 	}	
 	
 	
-	public static Matrix4d createIdentityMatrix() {
+	public static Matrix4d getIdentityMatrix() {
 		double m[][] = {   
 				{ 1.0d, 0.0d, 0.0d, 0.0d },
                	{ 0.0d, 1.0d, 0.0d, 0.0d },
@@ -64,7 +64,7 @@ public class Matrix4d {
 		return new Matrix4d(m);
 	}	
 	
-	public static Matrix4d createRotXMatrix(double a) {
+	public static Matrix4d getRotXMatrix(double a) {
 		double m[][] = {   
 				{ 1.0d, 0.0d,         0.0d,        0.0d },
                	{ 0.0d, Math.cos(a), -Math.sin(a), 0.0d },
@@ -74,7 +74,7 @@ public class Matrix4d {
 		return new Matrix4d(m);
 	}
 	
-	public static Matrix4d createRotYMatrix(double a) {
+	public static Matrix4d getRotYMatrix(double a) {
 		double m[][] = {   
 				{ Math.cos(a), 0.0d,  Math.sin(a), 0.0d },
                	{ 0.0d,        1.0d,  0.0d,        0.0d },
@@ -84,7 +84,7 @@ public class Matrix4d {
 		return new Matrix4d(m);
 	}
 	
-	public static Matrix4d createRotZMatrix(double a) {
+	public static Matrix4d getRotZMatrix(double a) {
 		double m[][] = {   
 				{ Math.cos(a), -Math.sin(a), 0.0d, 0.0d },
                	{ Math.sin(a),  Math.cos(a), 0.0d, 0.0d },
@@ -94,7 +94,7 @@ public class Matrix4d {
 		return new Matrix4d(m);
 	}
 	
-	public static Matrix4d createTranslationMatrix(Vector4d v) {
+	public static Matrix4d getTranslationMatrix(Vector4d v) {
 		double m[][] = {   
 				{ 1.0d, 0.0d, 0.0d, v.getX() },
                	{ 0.0d, 1.0d, 0.0d, v.getY() },

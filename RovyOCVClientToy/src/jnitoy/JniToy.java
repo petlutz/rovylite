@@ -63,23 +63,18 @@ public class JniToy extends JPanel {
 
 			for (ArucoMarker marker : markers) {
 				
-				Vector4d transVec = marker.getTranslationVector();
-				Matrix4d rotMatrix = marker.getRotationMatrix();
-				Matrix4d tMatrix = Matrix4d.createTranslationMatrix(transVec);
+				Matrix4d markerMatrix = marker.getTransformationMatrix();
 				
 				
-				Vector4d p0 = new Vector4d(0f, 0, 0);
-				Vector4d p1 = new Vector4d(0, 0, 0.2f);
-		
-				p0 = rotMatrix.mult(p0);
-				p0 = tMatrix.mult(p0);
+				Vector4d p0 = markerMatrix.mult(new Vector4d(0f, 0, 0.2f));
+				Vector4d p1 = markerMatrix.mult(new Vector4d(0.05f, 0, 0.0f));
+				Vector4d p2 = markerMatrix.mult(new Vector4d(-0.05f, 0, 0.0f));
 
-				p1 = rotMatrix.mult(p1);
-				p1 = tMatrix.mult(p1);
 
 				
 				toy.points.add(p0);
 				toy.points.add(p1);
+				toy.points.add(p2);
 		
 				//System.out.println(p1+"");
 			}

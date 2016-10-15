@@ -13,6 +13,8 @@ public class ArucoMarker {
 	
 	private Vector4d translationVector;
 	
+	private Matrix4d transformationMatrix;
+	
 	public Matrix4d getRotationMatrix() {
 		return rotationMatrix;
 	}
@@ -29,7 +31,11 @@ public class ArucoMarker {
 		this.translationVector = translationVector;
 	}
 	
-	
+	public Matrix4d getTransformationMatrix() {
+		if (transformationMatrix == null && translationVector != null && rotationMatrix != null)
+			transformationMatrix = Matrix4d.getTranslationMatrix(translationVector).mult(rotationMatrix);
+		return transformationMatrix;
+	}
 
 	private Point2i center;
 	
