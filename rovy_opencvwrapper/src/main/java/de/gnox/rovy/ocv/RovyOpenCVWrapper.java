@@ -34,7 +34,7 @@ public class RovyOpenCVWrapper {
 			double[] tVec = nArucoGetMarkerTranslationVector(markerIdx);
 
 			if (rMat != null) {
-				Matrix4d rMatrix = Matrix4d.getIdentityMatrix();
+				Matrix rMatrix = Matrix.getIdentityMatrix();
 				int row = 0; 
 				int col = 0;
 				for (int i = 0; i < 9; i++) {
@@ -49,7 +49,7 @@ public class RovyOpenCVWrapper {
 			} 
 			
 			if (tVec != null) {
-				marker.setTranslationVector(new Vector4d(tVec[0], tVec[1], tVec[2]));			
+				marker.setTranslationVector(new Vector(tVec[0], tVec[1], tVec[2]));			
 			}
 				
 			resultList.add(marker);

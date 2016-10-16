@@ -9,31 +9,31 @@ public class ArucoMarker {
 	
 	private List<Point2i> corners = new ArrayList<>(4);
 	
-	private Matrix4d rotationMatrix;
+	private Matrix rotationMatrix;
 	
-	private Vector4d translationVector;
+	private Vector translationVector;
 	
-	private Matrix4d transformationMatrix;
+	private Matrix transformationMatrix;
 	
-	public Matrix4d getRotationMatrix() {
+	public Matrix getRotationMatrix() {
 		return rotationMatrix;
 	}
 
-	public void setRotationMatrix(Matrix4d rotationVector) {
+	public void setRotationMatrix(Matrix rotationVector) {
 		this.rotationMatrix = rotationVector;
 	}
 
-	public Vector4d getTranslationVector() {
+	public Vector getTranslationVector() {
 		return translationVector;
 	}
 
-	public void setTranslationVector(Vector4d translationVector) {
+	public void setTranslationVector(Vector translationVector) {
 		this.translationVector = translationVector;
 	}
 	
-	public Matrix4d getTransformationMatrix() {
+	public Matrix getTransformationMatrix() {
 		if (transformationMatrix == null && translationVector != null && rotationMatrix != null)
-			transformationMatrix = Matrix4d.getTranslationMatrix(translationVector).mult(rotationMatrix);
+			transformationMatrix = Matrix.getTranslationMatrix(translationVector).mult(rotationMatrix);
 		return transformationMatrix;
 	}
 

@@ -1,10 +1,10 @@
 package de.gnox.rovy.ocv;
 
-public class Matrix4d {
+public class Matrix {
 	
 	private double[][] values;
 	
-	public Matrix4d(double[][] values) {
+	public Matrix(double[][] values) {
 		super();
 		this.values = values;
 	}
@@ -13,10 +13,10 @@ public class Matrix4d {
 		return values;
 	}
 	
-	public Matrix4d mult(Matrix4d other) {
+	public Matrix mult(Matrix other) {
 		double[][] mA = values;
 		double[][] mB = other.values;
-		Matrix4d result = getNullMatrix();
+		Matrix result = getNullMatrix();
 		double[][] mR = result.getValues();
 		
 		for (int i = 0; i < 4; i++) {
@@ -29,10 +29,10 @@ public class Matrix4d {
 		return result;
 	}
  	
-	public Vector4d mult(Vector4d vector) {
+	public Vector mult(Vector vector) {
 		double[][] mA = values;
 		double[] mB = vector.getValues();
-		Vector4d result = Vector4d.createNullVector();
+		Vector result = Vector.createNullVector();
 		double[] mR = result.getValues();
 		
 		for (int i = 0; i < 4; i++) {
@@ -43,65 +43,65 @@ public class Matrix4d {
 		return result;
 	}
 	
-	public static Matrix4d getNullMatrix() {
+	public static Matrix getNullMatrix() {
 		double m[][] = {   
 				{ 0.0d, 0.0d, 0.0d, 0.0d },
                	{ 0.0d, 0.0d, 0.0d, 0.0d },
                 { 0.0d, 0.0d, 0.0d, 0.0d },
                 { 0.0d, 0.0d, 0.0d, 0.0d } 
                 };
-		return new Matrix4d(m);
+		return new Matrix(m);
 	}	
 	
 	
-	public static Matrix4d getIdentityMatrix() {
+	public static Matrix getIdentityMatrix() {
 		double m[][] = {   
 				{ 1.0d, 0.0d, 0.0d, 0.0d },
                	{ 0.0d, 1.0d, 0.0d, 0.0d },
                 { 0.0d, 0.0d, 1.0d, 0.0d },
                 { 0.0d, 0.0d, 0.0d, 1.0d } 
                 };
-		return new Matrix4d(m);
+		return new Matrix(m);
 	}	
 	
-	public static Matrix4d getRotXMatrix(double a) {
+	public static Matrix getRotXMatrix(double a) {
 		double m[][] = {   
 				{ 1.0d, 0.0d,         0.0d,        0.0d },
                	{ 0.0d, Math.cos(a), -Math.sin(a), 0.0d },
                 { 0.0d, Math.sin(a),  Math.cos(a), 0.0d },
                 { 0.0d, 0.0d,         0.0d,        1.0d } 
                 };
-		return new Matrix4d(m);
+		return new Matrix(m);
 	}
 	
-	public static Matrix4d getRotYMatrix(double a) {
+	public static Matrix getRotYMatrix(double a) {
 		double m[][] = {   
 				{ Math.cos(a), 0.0d,  Math.sin(a), 0.0d },
                	{ 0.0d,        1.0d,  0.0d,        0.0d },
                 {-Math.sin(a), 0.0d,  Math.cos(a), 0.0d },
                 { 0.0d,        0.0d,  0.0d,        1.0d } 
                 };
-		return new Matrix4d(m);
+		return new Matrix(m);
 	}
 	
-	public static Matrix4d getRotZMatrix(double a) {
+	public static Matrix getRotZMatrix(double a) {
 		double m[][] = {   
 				{ Math.cos(a), -Math.sin(a), 0.0d, 0.0d },
                	{ Math.sin(a),  Math.cos(a), 0.0d, 0.0d },
                 { 0.0d,         0.0d,        1.0d, 0.0d },
                 { 0.0d,         0.0d,        0.0d, 1.0d } 
                 };
-		return new Matrix4d(m);
+		return new Matrix(m);
 	}
 	
-	public static Matrix4d getTranslationMatrix(Vector4d v) {
+	public static Matrix getTranslationMatrix(Vector v) {
 		double m[][] = {   
 				{ 1.0d, 0.0d, 0.0d, v.getX() },
                	{ 0.0d, 1.0d, 0.0d, v.getY() },
                 { 0.0d, 0.0d, 1.0d, v.getZ() },
                 { 0.0d, 0.0d, 0.0d, 1.0d     } 
                 };
-		return new Matrix4d(m);
+		return new Matrix(m);
 	}
 	
 	

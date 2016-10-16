@@ -9,9 +9,9 @@ import de.gnox.rovy.api.RovyTelemetryData;
 import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.CameraProcessor;
-import de.gnox.rovy.ocv.Matrix4d;
+import de.gnox.rovy.ocv.Matrix;
 import de.gnox.rovy.ocv.Point2i;
-import de.gnox.rovy.ocv.Vector4d;
+import de.gnox.rovy.ocv.Vector;
 
 public class Car {
 
@@ -176,6 +176,17 @@ public class Car {
 	
 	public void driveToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
 
+		driveToChargerApproachPosition(camTower, display);
+		
+		
+		if (slideToChargerApproachPosition(camTower, display) == null)
+			return;
+
+		doChargerApproach(camTower, display);
+	}
+
+	private void driveToChargerApproachPosition(CamTower camTower, I2cDisplay display)
+			throws RovyException {
 		
 		Optional<ArucoMarker> marker = searchMarker(42, camTower.getCam(), display);
 		if (!marker.isPresent())
@@ -183,22 +194,45 @@ public class Car {
 		
 		System.out.println("Marker found at " + marker.get().getTranslationVector());
 		
-		Matrix4d markerMatrix = marker.get().getTransformationMatrix();
+		Matrix markerMatrix = marker.get().getTransformationMatrix();
 		
-		Vector4d chargerApproachPos = markerMatrix.mult(new Vector4d(0.0d, 0.0d, 100.0d));
+		Vector chargerApproachPos = markerMatrix.mult(new Vector(0.0d, 0.0d, 100.0d));
 		driveToPosition(chargerApproachPos,  display);
 		
+	}
+	
+	private Double slideToChargerApproachPosition(CamTower camTower, I2cDisplay display)
+			throws RovyException {
+		
+		Double angle = getAngleToCharger(camTower, display);
+		if (angle == null)
+			return null;
+		while (Math.abs(angle) > 5) {
+			System.out.println("Angle: " + angle);
+			if (angle > 0)
+				slide(15, display);
+			else 
+				slide(-15, display);
+			angle = getAngleToCharger(camTower, display);
+			if (angle == null)
+				return null;
+		}
+		return angle;
+	}
+
+	private Double getAngleToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
+		Optional<ArucoMarker> marker;
 		marker = searchMarker(42, camTower.getCam(), display);
 		if (!marker.isPresent())
-			return;
-
+			return null;
 		
-		Vector4d chargerVec = marker.get().getTranslationVector();
-		System.out.println("ANGLE TO CHARGER: " + getAngleToPosition(chargerVec.getX(), chargerVec.getZ()));
+		Vector markerPos = marker.get().getTranslationVector();
+		Vector markerZAxis = marker.get().getTransformationMatrix().mult(new Vector(0, 0, -10)).subtract(markerPos);
+		markerPos.setY(0);
+		markerZAxis.setY(0);
 		
-		
-
-		doChargerApproach(camTower, display);
+		double angle = markerPos.getAngleBetweenAsDeg(markerZAxis);
+		return marker.get().getTransformationMatrix().mult(new Vector(0,0,100)).getX() > 0 ? angle : -angle;
 	}
 	
 	public void doChargerApproach(CamTower camTower, I2cDisplay display) throws RovyException {
@@ -208,15 +242,17 @@ public class Car {
 		camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
 		camera.startCapturing();
 		
+		long millisStart = System.currentTimeMillis();
 		while (true) {
 			Collection<ArucoMarker> detectedMarkers = camera.detectArucoMarkers();
 			marker = detectedMarkers.stream().filter(m -> m.getId() == 42).findAny();
 			if (marker.isPresent()) {
-				Vector4d chargerVec = marker.get().getTranslationVector();
-				if (chargerVec.getLength() < 30) 
+				Vector chargerVec = marker.get().getTranslationVector();
+				System.out.println("Distance to Charger: " + chargerVec.getLength());
+				if (chargerVec.getLength() < 34) 
 					break;
 				double angle = getAngleToPosition(chargerVec.getX(), chargerVec.getZ());
-				if (angle > 5 || angle < -5) {
+				if (Math.abs(angle) >= 3) {
 					turnFwdBkw((float)angle, true, display);
 				} else {
 					driveInternal(3, display);
@@ -224,17 +260,20 @@ public class Car {
 				RovyUtility.sleep(50);
 
 			}
+			
+			if (System.currentTimeMillis() - millisStart > 1000 * 60)
+				break;
 		}
 		
 		camera.stopCapturing();
 		
 	}
 	
-	private void driveToPosition(Vector4d position3D,  I2cDisplay display) throws RovyException {
+	private void driveToPosition(Vector position3D,  I2cDisplay display) throws RovyException {
 			driveToPosition(position3D.getX(), position3D.getZ(), display);
 	}
 	
-	private void turnToPosition(Vector4d position3D,  I2cDisplay display) throws RovyException {
+	private void turnToPosition(Vector position3D,  I2cDisplay display) throws RovyException {
 		turnToPosition(position3D.getX(), position3D.getZ(), display);
 }
 

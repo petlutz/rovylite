@@ -13,12 +13,12 @@ import javax.swing.JPanel;
 import de.gnox.rovy.ocv.ArucoDictionary;
 import de.gnox.rovy.ocv.ArucoMarker;
 import de.gnox.rovy.ocv.CameraProcessor;
-import de.gnox.rovy.ocv.Matrix4d;
-import de.gnox.rovy.ocv.Vector4d;
+import de.gnox.rovy.ocv.Matrix;
+import de.gnox.rovy.ocv.Vector;
 
 public class JniToy extends JPanel {
 
-	public List<Vector4d> points = new ArrayList<>();
+	public List<Vector> points = new ArrayList<>();
 	
    public JniToy() {
 		setPreferredSize(new Dimension(640, 480));
@@ -33,7 +33,7 @@ public class JniToy extends JPanel {
 		
 	}
 	
-	private void drawPoint(Graphics g, int idx, Vector4d p) {
+	private void drawPoint(Graphics g, int idx, Vector p) {
 		
 		double x2d = 320.0d + (p.getX() * 320.0d);
 		double y2d = p.getZ() * 240.0d;
@@ -63,20 +63,30 @@ public class JniToy extends JPanel {
 
 			for (ArucoMarker marker : markers) {
 				
-				Matrix4d markerMatrix = marker.getTransformationMatrix();
+				Matrix markerMatrix = marker.getTransformationMatrix();
 				
 				
-				Vector4d p0 = markerMatrix.mult(new Vector4d(0f, 0, 0.2f));
-				Vector4d p1 = markerMatrix.mult(new Vector4d(0.05f, 0, 0.0f));
-				Vector4d p2 = markerMatrix.mult(new Vector4d(-0.05f, 0, 0.0f));
+				Vector pt = markerMatrix.mult(new Vector(0f, 0, 0.0f));
+				Vector p0 = markerMatrix.mult(new Vector(0f, 0, -0.2f));
+				Vector p1 = markerMatrix.mult(new Vector(0.05f, 0, 0.0f));
+				Vector p2 = markerMatrix.mult(new Vector(-0.05f, 0, 0.0f));
 
-
+				pt.setY(0);
+				p0.setY(0);
+				p1.setY(0);
+				p2.setY(0);
 				
+
+				toy.points.add(pt);
 				toy.points.add(p0);
 				toy.points.add(p1);
 				toy.points.add(p2);
-		
-				//System.out.println(p1+"");
+				
+				Vector markerZAxis = p0.subtract(pt);
+
+				double angle = markerZAxis.getAngleBetweenAsDeg(pt);
+				
+				System.out.println(angle);
 			}
 		
 			toy.repaint();
