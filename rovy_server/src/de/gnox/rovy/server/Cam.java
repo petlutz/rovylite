@@ -24,7 +24,8 @@ public class Cam {
 	private boolean useLight = false;
 	
 	public Cam() {
-		lightOutput = GpioFactory.getInstance().provisionDigitalOutputPin(RaspiPin.GPIO_05, "light", PinState.HIGH);
+		lightOutput = GpioFactory.getInstance().provisionDigitalOutputPin(RaspiPin.GPIO_05, "light", PinState.LOW);
+		lightOutput2 = GpioFactory.getInstance().provisionDigitalOutputPin(RaspiPin.GPIO_12, "light2", PinState.LOW);
 	}
 	
 //	public void deletePicture() {
@@ -242,12 +243,41 @@ public class Cam {
 	}
 	
 	public void switchLightOn() {
-		if (useLight)
-			lightOutput.low();
+		if (useLight) {
+			lightOutput.high();
+		}
 	}
 	
 	public void switchLightOff() {
-		lightOutput.high();
+		lightOutput.low();
+	}
+	
+	public void switchLight2On() {
+		lightOutput2.high();
+		RovyUtility.sleep(30);
+		lightOutput2.low();
+		RovyUtility.sleep(30);
+		lightOutput2.high();
+		RovyUtility.sleep(30);
+		lightOutput2.low();
+		RovyUtility.sleep(30);
+		lightOutput2.low();
+		RovyUtility.sleep(30);
+		lightOutput2.high();
+	}
+	
+	public void switchLight2Off() {
+		lightOutput2.low();
+		RovyUtility.sleep(30);
+		lightOutput2.high();
+		RovyUtility.sleep(30);
+		lightOutput2.low();
+		RovyUtility.sleep(30);
+		lightOutput2.high();
+		RovyUtility.sleep(30);
+		lightOutput2.high();
+		RovyUtility.sleep(30);
+		lightOutput2.low();
 	}
 	
 	
@@ -400,6 +430,8 @@ public class Cam {
 //	private String lastThumpFile;
 
 	private GpioPinDigitalOutput lightOutput;
+
+	private GpioPinDigitalOutput lightOutput2;
 	
 	private File picture;
 	

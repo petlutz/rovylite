@@ -48,6 +48,8 @@ public class Car {
 			camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 0.1f);
 			camera.startCapturing();
 			Point2i camCenter = new Point2i(340, 220);
+
+			camTower.getCam().switchLight2On();
 			camTower.getCam().switchLightOn();
 
 			while (!stop) {
@@ -129,6 +131,7 @@ public class Car {
 				RovyUtility.sleep(sleepTime);
 			}
 			camTower.getCam().switchLightOff();
+			camTower.getCam().switchLight2Off();
 			camera.stopCapturing();
 			Car.this.markerFollower = null;
 		}
@@ -140,55 +143,62 @@ public class Car {
 	};
 	
 	
-	private Optional<ArucoMarker> searchMarker(int markerId, Cam cam, I2cDisplay display) throws RovyException {
+	private Optional<ArucoMarker> searchMarker(int markerId, Cam cam, I2cDisplay display, CameraProcessor cp) throws RovyException {
 		
-		cam.switchLightOn();
 		
-		CameraProcessor camera = new CameraProcessor(false, 0);
-		camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
-		camera.startCapturing();
 		
 		Optional<ArucoMarker> marker = Optional.empty();
 		
 		float stepDegrees = 40;
 		for (int i = 0; i < (360 / stepDegrees); i++) {
 			
-			Collection<ArucoMarker> detectedMarkers = camera.detectArucoMarkers();
+			Collection<ArucoMarker> detectedMarkers = cp.detectArucoMarkers();
 			marker = detectedMarkers.stream().filter(m -> m.getId() == markerId).findAny();
 			if (marker.isPresent())
 				break;
 
 			turnInternal(stepDegrees, display);
-			RovyUtility.sleep(200);
+			RovyUtility.sleep(50);
 			
 		}
 		
 
 		turnToPosition(marker.get().getTranslationVector(), display);
-		marker = camera.detectArucoMarkers().stream().filter(m -> m.getId() == markerId).findAny();
+		marker = cp.detectArucoMarkers().stream().filter(m -> m.getId() == markerId).findAny();
 		
-		camera.stopCapturing();
-		cam.switchLightOff();
-		
-		
+
 		return marker;
 	}
 	
 	public void driveToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
 
-		driveToChargerApproachPosition(camTower, display);
+		camTower.getCam().switchLight2On();
+		camTower.getCam().switchLightOn();
 		
+		CameraProcessor cp = new CameraProcessor(false, 0);
+		cp.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
+		cp.startCapturing();
 		
-		if (slideToChargerApproachPosition(camTower, display) == null)
-			return;
+		try {
 
-		doChargerApproach(camTower, display);
+			driveToChargerApproachPosition(camTower, display, cp);
+
+			if (slideToChargerApproachPosition(camTower, display, cp) == null)
+				return;
+
+			doChargerApproach(camTower, display, cp);
+
+		} finally {
+			cp.stopCapturing();
+			camTower.getCam().switchLightOff();
+			camTower.getCam().switchLight2Off();
+		}
 	}
 
-	private void driveToChargerApproachPosition(CamTower camTower, I2cDisplay display)
+	private void driveToChargerApproachPosition(CamTower camTower, I2cDisplay display, CameraProcessor cp)
 			throws RovyException {
 		
-		Optional<ArucoMarker> marker = searchMarker(42, camTower.getCam(), display);
+		Optional<ArucoMarker> marker = searchMarker(42, camTower.getCam(), display, cp);
 		if (!marker.isPresent())
 			return;
 		
@@ -201,10 +211,10 @@ public class Car {
 		
 	}
 	
-	private Double slideToChargerApproachPosition(CamTower camTower, I2cDisplay display)
+	private Double slideToChargerApproachPosition(CamTower camTower, I2cDisplay display, CameraProcessor cp)
 			throws RovyException {
 		
-		Double angle = getAngleToCharger(camTower, display);
+		Double angle = getAngleToCharger(camTower, display, cp);
 		if (angle == null)
 			return null;
 		while (Math.abs(angle) > 5) {
@@ -213,16 +223,16 @@ public class Car {
 				slide(15, display);
 			else 
 				slide(-15, display);
-			angle = getAngleToCharger(camTower, display);
+			angle = getAngleToCharger(camTower, display, cp);
 			if (angle == null)
 				return null;
 		}
 		return angle;
 	}
 
-	private Double getAngleToCharger(CamTower camTower, I2cDisplay display) throws RovyException {
+	private Double getAngleToCharger(CamTower camTower, I2cDisplay display, CameraProcessor cp) throws RovyException {
 		Optional<ArucoMarker> marker;
-		marker = searchMarker(42, camTower.getCam(), display);
+		marker = searchMarker(42, camTower.getCam(), display, cp);
 		if (!marker.isPresent())
 			return null;
 		
@@ -235,16 +245,14 @@ public class Car {
 		return marker.get().getTransformationMatrix().mult(new Vector(0,0,100)).getX() > 0 ? angle : -angle;
 	}
 	
-	public void doChargerApproach(CamTower camTower, I2cDisplay display) throws RovyException {
+	public void doChargerApproach(CamTower camTower, I2cDisplay display, CameraProcessor cp) throws RovyException {
 		
 		Optional<ArucoMarker> marker = Optional.empty();
-		CameraProcessor camera = new CameraProcessor(false, 0);
-		camera.initArucoWithPoseEstimation(ArucoDictionary.DICT_4X4_250, 10f);
-		camera.startCapturing();
+		
 		
 		long millisStart = System.currentTimeMillis();
 		while (true) {
-			Collection<ArucoMarker> detectedMarkers = camera.detectArucoMarkers();
+			Collection<ArucoMarker> detectedMarkers = cp.detectArucoMarkers();
 			marker = detectedMarkers.stream().filter(m -> m.getId() == 42).findAny();
 			if (marker.isPresent()) {
 				Vector chargerVec = marker.get().getTranslationVector();
@@ -255,18 +263,19 @@ public class Car {
 				if (Math.abs(angle) >= 3) {
 					turnFwdBkw((float)angle, true, display);
 				} else {
-					driveInternal(3, display);
+					driveInternal(2, display);
 				}
 				RovyUtility.sleep(50);
 
+			} else {
+				return;
 			}
 			
 			if (System.currentTimeMillis() - millisStart > 1000 * 60)
 				break;
 		}
 		
-		camera.stopCapturing();
-		
+
 	}
 	
 	private void driveToPosition(Vector position3D,  I2cDisplay display) throws RovyException {
