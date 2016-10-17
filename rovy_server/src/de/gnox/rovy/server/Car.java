@@ -206,7 +206,7 @@ public class Car {
 		
 		Matrix markerMatrix = marker.get().getTransformationMatrix();
 		
-		Vector chargerApproachPos = markerMatrix.mult(new Vector(0.0d, 0.0d, 100.0d));
+		Vector chargerApproachPos = markerMatrix.mult(new Vector(0.0d, 0.0d, 80.0d));
 		driveToPosition(chargerApproachPos,  display);
 		
 	}
@@ -249,15 +249,17 @@ public class Car {
 		
 		Optional<ArucoMarker> marker = Optional.empty();
 		
-		
+		int framesWithoutMarker = 0;
 		long millisStart = System.currentTimeMillis();
+
 		while (true) {
 			Collection<ArucoMarker> detectedMarkers = cp.detectArucoMarkers();
 			marker = detectedMarkers.stream().filter(m -> m.getId() == 42).findAny();
 			if (marker.isPresent()) {
+				framesWithoutMarker = 0;
 				Vector chargerVec = marker.get().getTranslationVector();
 				System.out.println("Distance to Charger: " + chargerVec.getLength());
-				if (chargerVec.getLength() < 34) 
+				if (chargerVec.getLength() < 38) 
 					break;
 				double angle = getAngleToPosition(chargerVec.getX(), chargerVec.getZ());
 				if (Math.abs(angle) >= 3) {
@@ -268,14 +270,16 @@ public class Car {
 				RovyUtility.sleep(50);
 
 			} else {
-				return;
+				framesWithoutMarker++;
+				if (framesWithoutMarker > 60)
+					return;
 			}
 			
-			if (System.currentTimeMillis() - millisStart > 1000 * 60)
+			if (System.currentTimeMillis() - millisStart > 500 * 60)
 				break;
 		}
 		
-
+		driveInternal(10, display);
 	}
 	
 	private void driveToPosition(Vector position3D,  I2cDisplay display) throws RovyException {
