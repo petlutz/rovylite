@@ -82,6 +82,10 @@ public class Vector {
 			result += val * val;
 		return Math.sqrt(result);
 	}
+	
+	public Vector negate() {
+		return new Vector(-getX(), -getY(), -getZ());
+	}
 
 	
 	public static Vector createNullVector() {
