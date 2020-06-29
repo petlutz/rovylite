@@ -72,17 +72,6 @@ public class Cam {
 		captureVideoAsync(millis, VIDEO_BORDER_MILLIS);
 	}
 	
-	public void startCapturing() {
-		switch (capturingMode) {
-		case Video:
-		case PictureWithVideo:
-			captureVideoAsync(VIDEO_TIMEOUT_MILLIS);
-			break;
-		default:
-			break;
-		}
-	}
-	
 	private void captureVideoAsync(int millis, int borderMillis) {
 //		waitForVideo();
 //		deleteVideo();
@@ -101,21 +90,6 @@ public class Cam {
 		} 
 	}
 	
-	
-	public void finishCapturing()  {
-		switch (capturingMode) {
-		case Video:
-			finishVideo();
-			break;
-		case PictureWithVideo:
-			finishVideo();
-			capturePicture(true);
-			break;
-		case Picture:
-			capturePicture(true);
-			break;
-		}
-	}
 
 
 	private void finishVideo() {
@@ -316,7 +290,6 @@ public class Cam {
 		String mediaPathSize = callCmdAndGetOutput(cmdMediaPathSize);
 		String df = callCmdAndGetOutput(cmdDf);
 		
-		telemetryData.getEntries().add(prefix + "capturingMode: " + capturingMode.name());
 		telemetryData.getEntries().add(prefix + "mediaPathSize: " + mediaPathSize);
 		telemetryData.getEntries().add(prefix + "df: " + df);
 		telemetryData.getEntries().add(prefix + "useLight: " + useLight);
@@ -325,11 +298,7 @@ public class Cam {
 		telemetryData.getEntries().add(prefix + "video: " + video);
 		telemetryData.getEntries().add(prefix + "videoCapturingProcessAlive: " + (videoCapturingProcess != null ? videoCapturingProcess.isAlive() : "no process"));
 	}
-	
-	public void setCapturingMode(CamCapturingMode capturingMode) {
-		this.capturingMode = capturingMode;
-	}
-	
+
 //	public synchronized void takeThump()  {
 //		String localThumpName = "thump_" + new Date().getTime() + ".jpg";
 //		String thumpName = THUMPS_PATH + localThumpName;
@@ -406,8 +375,6 @@ public class Cam {
 	private Process videoCapturingProcess;
 	
 	private File video;
-	
-	private CamCapturingMode capturingMode = CamCapturingMode.Video;
 	
 	private String MEDIA_PATH = "media/";
 }

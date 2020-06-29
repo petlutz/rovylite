@@ -139,47 +139,7 @@ public class RovyComServlet extends HttpServlet {
 				"<center><p><a href='RovyComServlet'><img src='icon2_64.png'></a></p><p><strong>. . R o v y C o m . .</strong></p></center>"
 						+ "");
 		w.append("<hr>");
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<input type='text' size='5' name='degrees'>deg<br>");
-//		w.append("<button type='submit' name='command' value='Turn'>&#x21B6;&#x21B7;</button>");
-//		w.append("<button type='submit' name='command' value='TurnFwd'>&#x21B6;&#x2191;&#x21B7;</button>");
-//		w.append("<button type='submit' name='command' value='TurnBkw'>&#x21B6;&#x2193;&#x21B7;</button>");
-//		w.append("</form>");
-		
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<input type='text' size='5' name='degrees'>deg<br>");
-//		w.append("<button type='submit' name='command' value='Slide'>&#x2194;</button>");
-//		w.append("</form>");
-		
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<input type='hidden' name='command' value='Turn'>");
-//		w.append("<button type='submit' name='degrees' value='-10'>&#x21B6;10</button>");
-//		w.append("<button type='submit' name='degrees' value='-30'>&#x21B6;30</button>");
-//		w.append("<button type='submit' name='degrees' value='-90'>&#x21B6;90</button>");
-//		w.append("<button type='submit' name='degrees' value='-180'>&#x21B6;180</button><br>");
-//		w.append("<button type='submit' name='degrees' value='10'>&#x21B7;10</button>");
-//		w.append("<button type='submit' name='degrees' value='30'>&#x21B7;30</button>");
-//		w.append("<button type='submit' name='degrees' value='90'>&#x21B7;90</button>");
-//		w.append("<button type='submit' name='degrees' value='180'>&#x21B7;180</button>");
-//		w.append("</form>");
-		
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<input type='text' size='5' name='cm'>cm<br>");
-//		w.append("<button type='submit' name='command' value='Drive'><b>&#x2191;&#x2193;</b></button>");
-//		w.append("</form>");
-		
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<input type='hidden' name='command' value='Drive'>");
-//		w.append("<button type='submit' name='cm' value='5'>&#x2191;5</button>");
-//		w.append("<button type='submit' name='cm' value='10'>&#x2191;10</button>");
-//		w.append("<button type='submit' name='cm' value='50'>&#x2191;50</button>");
-//		w.append("<button type='submit' name='cm' value='100'>&#x2191;100</button><br>");
-//		w.append("<button type='submit' name='cm' value='-5'>&#x2193;5</button>");
-//		w.append("<button type='submit' name='cm' value='-10'>&#x2193;10</button>");
-//		w.append("<button type='submit' name='cm' value='-50'>&#x2193;50</button>");
-//		w.append("<button type='submit' name='cm' value='-100'>&#x2193;100</button>");
-//		w.append("</form>");
-		
+
 		w.append("<hr>");
 		w.append("<form action='RovyComServlet'>");
 		w.append("<button type='submit' name='command' value='CapturePicture'>capture picture</button>");
@@ -189,30 +149,12 @@ public class RovyComServlet extends HttpServlet {
 		w.append("<input size='5' type='text' name='seconds'>sec<br>");
 		w.append("<button type='submit' name='command' value='CaptureVideo'>capture video</button>");
 		w.append("</form>");
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<button type='submit' name='command' value='CamUp'>cam up</button>");
-//		w.append("<button type='submit' name='command' value='CamDown'>cam down</button>");
-//		w.append("<button type='submit' name='command' value='CamForeward'>look foreward</button>");
-//		w.append("<button type='submit' name='command' value='CamToPowerbank'>look to powerbank</button>");
-//		w.append("</form>");
-//		w.append("</form>");
 		w.append("<hr>");
 		w.append("<form action='RovyComServlet'>");
 		w.append("<button type='submit' name='command' value='LightOn'>light on</button>");
 		w.append("<button type='submit' name='command' value='LightOff'>light off</button>");
 		w.append("</form>");
-		w.append("<form action='RovyComServlet'>");
-		w.append("<select name='mode'>");
-		w.append("<option>Video</option>");
-		w.append("<option>Picture</option>");
-		w.append("<option>PictureWithVideo</option>");
-		w.append("</select>");
-		w.append("<button type='submit' name='command' value='SetCapturingMode'>set capturingmode</button>");
-		w.append("</form>");
 		w.append("<hr>");
-//		w.append("<form action='RovyComServlet'>");
-//		w.append("<button type='submit' name='command' value='Dance'>dance</button>");
-//		w.append("</form>");
 		w.append("<form action='RovyComServlet'>");
 		w.append("<button type='submit' name='command' value='EmergencyOff'>EMERGENCY OFF</button>");
 		w.append("</form>");

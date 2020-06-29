@@ -6,13 +6,15 @@ import de.gnox.rovy.api.RovyTelemetryData;
 public class Rovy {
 
 	private Cam cam;
-	private I2cDisplay display;
+	
+	private Transmitter transmitter = new Transmitter();
+//	private I2cDisplay display;
 
 	public Rovy() {
 		System.out.println("NEW ROVER");
 		initRaspIo();
 		System.out.println("raspinit fertig");
-		display = new I2cDisplay();
+//		display = new I2cDisplay();
 		cam = new Cam();
 		// display = new I2cDisplay();
 	}
@@ -24,13 +26,6 @@ public class Rovy {
 		// } catch (Exception e) {
 		// e.printStackTrace();
 		// }
-	}
-
-	public void setCapturingMode(RovyCommand command) throws NumberFormatException, RovyException {
-		String mode = command.getParameter("mode");
-		if (mode == null)
-			throw new RovyException("mode is empty");
-		getCam().setCapturingMode(CamCapturingMode.valueOf(mode));
 	}
 
 	private void captureVideo(RovyCommand command) throws RovyException {
@@ -52,7 +47,7 @@ public class Rovy {
 	}
 
 	private boolean performCommandInternal(RovyCommand command) {
-		display.touch();
+//		display.touch();
 		getCam().deselectMedia();
 		boolean result = true;
 		try {
@@ -76,11 +71,9 @@ public class Rovy {
 				getCam().clearMediaCache();
 //				commandHistory = new ArrayList<>();
 				break;
-			case SetCapturingMode:
-				setCapturingMode(command);
-				break;
 			case EmergencyOff:
-				// TODO
+//				send 00011 3 1
+				transmitter.send("00011", "3", "0");
 				break;
 			default:
 				throw new RovyException("unknown command");
