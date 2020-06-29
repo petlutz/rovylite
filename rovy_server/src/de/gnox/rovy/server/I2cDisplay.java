@@ -1,6 +1,5 @@
 package de.gnox.rovy.server;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.pi4j.io.i2c.I2CBus;

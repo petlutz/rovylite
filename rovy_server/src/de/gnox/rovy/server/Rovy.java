@@ -1,27 +1,19 @@
 package de.gnox.rovy.server;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.gnox.rovy.api.RovyCommand;
-import de.gnox.rovy.api.RovyCommandType;
 import de.gnox.rovy.api.RovyTelemetryData;
 
 public class Rovy {
 
-	private Car car;
-	private CamTower camTower;
+	private Cam cam;
 	private I2cDisplay display;
-	private Audio audio;
 
 	public Rovy() {
 		System.out.println("NEW ROVER");
 		initRaspIo();
 		System.out.println("raspinit fertig");
 		display = new I2cDisplay();
-		car = new Car();
-		camTower = new CamTower();
-		audio = new Audio();
+		cam = new Cam();
 		// display = new I2cDisplay();
 	}
 
@@ -40,50 +32,6 @@ public class Rovy {
 			throw new RovyException("mode is empty");
 		getCam().setCapturingMode(CamCapturingMode.valueOf(mode));
 	}
-
-	public void drive(RovyCommand command) throws NumberFormatException, RovyException {
-		String cm = command.getParameter("cm");
-		if (cm == null)
-			throw new RovyException("cm is empty");
-		// car.driveNew( Float.parseFloat(meters), getCam() );
-		car.driveNew(Integer.parseInt(cm), getCam(), display);
-	}
-
-	public void turn(RovyCommand command) throws NumberFormatException, RovyException {
-		String degrees = command.getParameter("degrees");
-		if (degrees == null)
-			throw new RovyException("degrees is empty");
-		car.turnNew(Float.parseFloat(degrees), getCam(), display);
-	}
-
-	public void turnFwd(RovyCommand command) throws NumberFormatException, RovyException {
-		String degrees = command.getParameter("degrees");
-		if (degrees == null)
-			throw new RovyException("degrees is empty");
-		getCam().startCapturing();
-		car.turnFwdBkw(Float.parseFloat(degrees), true, display);
-		getCam().finishCapturing();
-	}
-	
-
-	public void turnBkw(RovyCommand command) throws NumberFormatException, RovyException {
-		String degrees = command.getParameter("degrees");
-		if (degrees == null)
-			throw new RovyException("degrees is empty");
-		getCam().startCapturing();
-		car.turnFwdBkw(Float.parseFloat(degrees), false, display);
-		getCam().finishCapturing();
-	}
-	
-	public void slide(RovyCommand command) throws NumberFormatException, RovyException {
-		String degrees = command.getParameter("degrees");
-		if (degrees == null)
-			throw new RovyException("degrees is empty");
-		getCam().startCapturing();
-		car.slide(Float.parseFloat(degrees), display);
-		getCam().finishCapturing();
-	}
-
 
 	private void captureVideo(RovyCommand command) throws RovyException {
 		String seconds = command.getParameter("seconds");
@@ -109,40 +57,6 @@ public class Rovy {
 		boolean result = true;
 		try {
 			switch (command.getType()) {
-			case CamDown:
-				camTower.camDown();
-				// cam.capturePicture();
-				break;
-			case CamUp:
-				camTower.camUp();
-				// cam.capturePicture();
-				break;
-			case CamForeward:
-				camTower.lookForeward();
-				break;
-			case CamToPowerbank:
-				camTower.lookToPowerbank();
-				break;
-			case Drive:
-				drive(command);
-				// cam.capture();
-				break;
-			case Turn:
-				turn(command);
-				// cam.capture();
-				break;
-			case TurnFwd:
-				turnFwd(command);
-				// cam.capture();
-				break;
-			case TurnBkw:
-				turnBkw(command);
-				// cam.capture();
-				break;
-			case Slide:
-				slide(command);
-				// cam.capture();
-				break;
 			case CapturePicture:
 				getCam().capturePicture(false);
 				break;
@@ -153,15 +67,10 @@ public class Rovy {
 				captureVideo(command);
 				break;
 			case LightOn:
-				camTower.getCam().useLight(true);
+				cam.useLight(true);
 				break;
 			case LightOff:
-				camTower.getCam().useLight(false);
-				break;
-			case Dance:
-				 car.dance(getCam());
-				// replayCommandHistory();
-				// car.driveStepped(10, getCam());
+				cam.useLight(false);
 				break;
 			case ClearMediaCache:
 				getCam().clearMediaCache();
@@ -170,8 +79,8 @@ public class Rovy {
 			case SetCapturingMode:
 				setCapturingMode(command);
 				break;
-			case MakeNoise:
-				audio.makeNoise();
+			case EmergencyOff:
+				// TODO
 				break;
 			default:
 				throw new RovyException("unknown command");
@@ -196,13 +105,12 @@ public class Rovy {
 	public RovyTelemetryData getTelemetryData() {
 		RovyTelemetryData telemetryData = new RovyTelemetryData();
 		telemetryData.getEntries().add("lastCommand: " + lastCommand);
-		car.fillTelemetryData("car: ", telemetryData);
-		camTower.fillTelemetryData("camTower: ", telemetryData);
+		cam.fillTelemetryData("camTower: ", telemetryData);
 		return telemetryData;
 	}
 
 	public Cam getCam() {
-		return camTower.getCam();
+		return cam;
 	}
 
 	private RovyCommand lastCommand = null;
