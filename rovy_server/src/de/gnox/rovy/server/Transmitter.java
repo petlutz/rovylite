@@ -2,6 +2,9 @@ package de.gnox.rovy.server;
 
 import java.io.IOException;
 
+/**
+ * Controls 433Mhz sender.
+ */
 public class Transmitter {
 
 	public void send(String systemCode, String unitCode, String command) {

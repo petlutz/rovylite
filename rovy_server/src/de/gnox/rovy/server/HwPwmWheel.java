@@ -6,8 +6,6 @@ import com.pi4j.io.gpio.GpioPinPwmOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
-import de.gnox.rovy.api.RovyTelemetryData;
-
 public class HwPwmWheel extends Wheel {
 
 //	public HwPwmWheel(int pinForward, int pinBackward) {

@@ -3,6 +3,8 @@ package de.gnox.rovy.server;
 import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 
+import com.pi4j.wiringpi.Gpio;
+
 import de.gnox.rovy.api.RovyCom;
 
 public class Launcher {
@@ -20,6 +22,11 @@ public class Launcher {
 //	        System.setSecurityManager(new SecurityManager());
 //	    }
         try {
+//    		try {
+//			Gpio.wiringPiSetup();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
             RovyCom obj = new RovyComImpl();
         	System.out.println("RovyCom server running ...");
             Naming.rebind("rmi://127.0.0.1:1234/RovyCom",obj);

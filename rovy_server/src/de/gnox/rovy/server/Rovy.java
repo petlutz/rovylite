@@ -5,9 +5,14 @@ import de.gnox.rovy.api.RovyTelemetryData;
 
 public class Rovy {
 
-	private Cam cam;
+	private Config config;
 	
+	private Cam cam;
+
 	private Transmitter transmitter = new Transmitter();
+
+	private DHT22 dht22;
+
 //	private I2cDisplay display;
 
 	public Rovy() {
@@ -15,17 +20,22 @@ public class Rovy {
 		initRaspIo();
 		System.out.println("raspinit fertig");
 //		display = new I2cDisplay();
-		cam = new Cam();
+		
 		// display = new I2cDisplay();
 	}
 
 	public void initRaspIo() {
-		// GpioUtil.enableNonPrivilegedAccess();
-		// try {
-		// Gpio.wiringPiSetup();
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
+		
+		config = new Config();
+		dht22 = new DHT22(config.getPinDHT22Data());
+		cam = new Cam();
+		
+//		GpioUtil.enableNonPrivilegedAccess();
+//		try {
+//			Gpio.wiringPiSetup();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	private void captureVideo(RovyCommand command) throws RovyException {
@@ -71,9 +81,13 @@ public class Rovy {
 				getCam().clearMediaCache();
 //				commandHistory = new ArrayList<>();
 				break;
-			case EmergencyOff:
+			case PowerOn:
 //				send 00011 3 1
-				transmitter.send("00011", "3", "0");
+				transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "1");
+				break;
+			case PowerOff:
+//				send 00011 3 1
+				transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "0");
 				break;
 			default:
 				throw new RovyException("unknown command");
@@ -98,6 +112,17 @@ public class Rovy {
 	public RovyTelemetryData getTelemetryData() {
 		RovyTelemetryData telemetryData = new RovyTelemetryData();
 		telemetryData.getEntries().add("lastCommand: " + lastCommand);
+
+		try {
+			dht22.refreshData();
+			telemetryData.getEntries().add("temp: " + dht22.getTemperature() + "*C");
+			telemetryData.getEntries().add("humidity: " + dht22.getHumidity() + "%");
+		} catch (Exception e) {
+			e.printStackTrace();
+			telemetryData.getEntries().add("temp: ERROR: ");
+			telemetryData.getEntries().add("humidity: ERROR");
+		}
+
 		cam.fillTelemetryData("camTower: ", telemetryData);
 		return telemetryData;
 	}
