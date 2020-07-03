@@ -28,7 +28,7 @@ public class Rovy {
 		
 		config = new Config();
 		dht22 = new DHT22(config.getPinDHT22Data());
-		cam = new Cam();
+		cam = new Cam(config);
 		
 //		GpioUtil.enableNonPrivilegedAccess();
 //		try {
@@ -72,10 +72,10 @@ public class Rovy {
 				captureVideo(command);
 				break;
 			case LightOn:
-				cam.useLight(true);
+				cam.switchLight(true);
 				break;
 			case LightOff:
-				cam.useLight(false);
+				cam.switchLight(false);
 				break;
 			case ClearMediaCache:
 				getCam().clearMediaCache();

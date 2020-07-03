@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.RaspiPin;
 
 import de.gnox.rovy.api.RovyTelemetryData;
 
@@ -21,10 +20,11 @@ public class Cam {
 
 	private static final int VIDEO_TIMEOUT_MILLIS = 60000 * 3; // 3 Min
 
-	private boolean useLight = false;
+	private boolean lightEnabled = false;
 	
-	public Cam() {
-		lightOutput = GpioFactory.getInstance().provisionDigitalOutputPin(RaspiPin.GPIO_05, "light", PinState.HIGH);
+	public Cam(Config config) {
+		lightOutput = GpioFactory.getInstance().provisionDigitalOutputPin(config.getPinLight(), "light", PinState.LOW);
+		switchLight(false);
 	}
 	
 //	public void deletePicture() {
@@ -199,7 +199,7 @@ public class Cam {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		switchLightOff();
+		switchLight();
 	}
 	
 	public File getPicture() {
@@ -210,18 +210,25 @@ public class Cam {
 		return video;
 	}
 	
-	public void useLight(boolean enabled) {
-		useLight = enabled;
+	public void switchLight(boolean enabled) {
+		this.lightEnabled = enabled;
+		switchLight();
 		
+	}
+
+	private void switchLight() {
+		if (lightEnabled) 
+			switchLightOn();
+		else
+			switchLightOff();
 	}
 	
 	private void switchLightOn() {
-		if (useLight)
-			lightOutput.low();
+			lightOutput.high();
 	}
 	
 	private void switchLightOff() {
-		lightOutput.high();
+		lightOutput.low();
 	}
 	
 	
@@ -292,7 +299,7 @@ public class Cam {
 		
 		telemetryData.getEntries().add(prefix + "mediaPathSize: " + mediaPathSize);
 		telemetryData.getEntries().add(prefix + "df: " + df);
-		telemetryData.getEntries().add(prefix + "useLight: " + useLight);
+		telemetryData.getEntries().add(prefix + "lightEnabled: " + lightEnabled);
 		telemetryData.getEntries().add(prefix + "lightPinState: " + lightOutput.getState());
 		telemetryData.getEntries().add(prefix + "picture: " + picture);
 		telemetryData.getEntries().add(prefix + "video: " + video);

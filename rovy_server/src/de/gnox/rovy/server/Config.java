@@ -1,5 +1,8 @@
 package de.gnox.rovy.server;
 
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
+
 public class Config {
 	
 //	private Properties properties = new Properties();
@@ -25,6 +28,10 @@ public class Config {
 	
 	public String getPowerSwitchUnitCode() {
 		return "3";
+	}
+	
+	public Pin getPinLight() {
+		return RaspiPin.GPIO_05;
 	}
 	
 	
