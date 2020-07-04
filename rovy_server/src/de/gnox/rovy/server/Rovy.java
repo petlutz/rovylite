@@ -125,7 +125,7 @@ public class Rovy {
 			telemetryData.getEntries().add("humidity: ERROR");
 		}
 
-		cam.fillTelemetryData("camTower: ", telemetryData);
+		cam.fillTelemetryData("cam: ", telemetryData);
 		return telemetryData;
 	}
 

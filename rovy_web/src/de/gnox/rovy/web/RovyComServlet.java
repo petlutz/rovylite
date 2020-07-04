@@ -138,31 +138,31 @@ public class RovyComServlet extends HttpServlet {
 
 		w.append("<table><tr><td valign='top' colspan='3' style='background-color: #abc; padding:8;'>");
 		w.append(
-				"<center><a href='RovyComServlet'><strong>* * * R o v y C o m * * *</strong></a></center>");
+				"<center><a href='RovyComServlet'><img src='icon2_64.png'></a><br><strong>. . . R o v y C o m . . .</strong></center>");
 		
-		w.append("</td></tr><td style=' background-color: #abc; padding:8;'><center>");
+		w.append("</td></tr><td style=' background-color: #abc; padding:8;'><center><br>");
 		w.append("<form action='RovyComServlet'>");
-		w.append("<button type='submit' name='command' value='PowerOn'>ON</button><br><br>");
+		w.append("<button type='submit' name='command' value='PowerOn' style='font-size: xx-large;'>ON</button><br><br>");
 		if (showOffButton)
-			w.append("<button type='submit' name='command' value='PowerOff' stype='color: white'>OFF!</button>");
+			w.append("<button type='submit' name='command' value='PowerOff' style='font-size: xx-large;'>OFF!</button>");
 		else
 			w.append("<a href='RovyComServlet?showOffButton=true'>OFF?</a>");
 		w.append("</form>");
 		
-		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center>");
+		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center><br>");
 
 		w.append("<form action='RovyComServlet'>");
-		w.append("<button type='submit' name='command' value='CapturePicture'>capture picture</button><br><br>");
-		w.append("<button type='submit' name='command' value='CaptureBigPicture'>capture big picture</button>");
+		w.append("<button type='submit' name='command' value='CapturePicture' style='font-size: xx-large;'>capture picture</button><br><br>");
+		w.append("<button type='submit' name='command' value='CaptureBigPicture' style='font-size: xx-large;'>capture big picture</button>");
 		w.append("</form>");
 		w.append("<form action='RovyComServlet'>");
 		w.append("<input size='5' type='text' name='seconds' value='15'>sec<br>");
-		w.append("<button type='submit' name='command' value='CaptureVideo'>capture video</button>");
+		w.append("<button type='submit' name='command' value='CaptureVideo' style='font-size: xx-large;'>capture video</button>");
 		w.append("</form>");
-		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center>");
+		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center><br>");
 		w.append("<form action='RovyComServlet'>");
-		w.append("<button type='submit' name='command' value='LightOn'>light on</button><br><br>");
-		w.append("<button type='submit' name='command' value='LightOff'>light off</button>");
+		w.append("<button type='submit' name='command' value='LightOn' style='font-size: xx-large;'>light on</button><br><br>");
+		w.append("<button type='submit' name='command' value='LightOff' style='font-size: xx-large;'>light off</button>");
 		w.append("</form>");
 	
 		w.append("</center></td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640;'>");
