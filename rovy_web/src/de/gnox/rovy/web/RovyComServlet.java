@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -128,41 +129,43 @@ public class RovyComServlet extends HttpServlet {
 					new HashMap<>(request.getParameterMap()));
 			rover.performCommand(command);
 		}
-		writeComPage(response.getWriter(), rover);
+		String showOffButton = request.getParameter("showOffButton");
+		writeComPage(response.getWriter(), rover, Objects.equals("true", showOffButton));
 	}
 
-	private void writeComPage(PrintWriter w, RovyCom rover) throws RemoteException {
-		w.append("<html><body>");
+	private void writeComPage(PrintWriter w, RovyCom rover, boolean showOffButton) throws RemoteException {
+		w.append("<html><head><meta name='viewport' content='width=640' /></head><body>");
 
-		w.append("<table><tr><td valign='top' style='width:300; min-width:300; background-color: #abc; padding:8;'>");
+		w.append("<table><tr><td valign='top' colspan='3' style='background-color: #abc; padding:8;'>");
 		w.append(
-				"<center><p><a href='RovyComServlet'><img src='icon2_64.png'></a></p><p><strong>. . R o v y C o m . .</strong></p></center>"
-						+ "");
-		w.append("<hr>");
-
-		w.append("<hr>");
+				"<center><a href='RovyComServlet'><strong>* * * R o v y C o m * * *</strong></a></center>");
+		
+		w.append("</td></tr><td style=' background-color: #abc; padding:8;'><center>");
 		w.append("<form action='RovyComServlet'>");
-		w.append("<button type='submit' name='command' value='CapturePicture'>capture picture</button>");
+		w.append("<button type='submit' name='command' value='PowerOn'>ON</button><br><br>");
+		if (showOffButton)
+			w.append("<button type='submit' name='command' value='PowerOff' stype='color: white'>OFF!</button>");
+		else
+			w.append("<a href='RovyComServlet?showOffButton=true'>OFF?</a>");
+		w.append("</form>");
+		
+		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center>");
+
+		w.append("<form action='RovyComServlet'>");
+		w.append("<button type='submit' name='command' value='CapturePicture'>capture picture</button><br><br>");
 		w.append("<button type='submit' name='command' value='CaptureBigPicture'>capture big picture</button>");
 		w.append("</form>");
 		w.append("<form action='RovyComServlet'>");
-		w.append("<input size='5' type='text' name='seconds'>sec<br>");
+		w.append("<input size='5' type='text' name='seconds' value='15'>sec<br>");
 		w.append("<button type='submit' name='command' value='CaptureVideo'>capture video</button>");
 		w.append("</form>");
-		w.append("<hr>");
+		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center>");
 		w.append("<form action='RovyComServlet'>");
-		w.append("<button type='submit' name='command' value='LightOn'>light on</button>");
+		w.append("<button type='submit' name='command' value='LightOn'>light on</button><br><br>");
 		w.append("<button type='submit' name='command' value='LightOff'>light off</button>");
 		w.append("</form>");
-		w.append("<hr>");
-		w.append("<form action='RovyComServlet'>");
-		w.append("<button type='submit' name='command' value='PowerOn'>ON</button>");
-		w.append("<button type='submit' name='command' value='PowerOff'>OFF</button>");
-		w.append("</form>");
-		w.append("<hr>");
-		w.append("<a href='RovyComServlet?page=media'>media</a>");
-
-		w.append("</td><td valign='top'>");
+	
+		w.append("</center></td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640;'>");
 		String camPicture = rover.getCamPicture();
 		String camVideo = rover.getCamVideo();
 		if (camVideo != null) {
@@ -179,6 +182,10 @@ public class RovyComServlet extends HttpServlet {
 		rover.getTelemetryData().getEntries().forEach(msg -> {
 			w.append(msg + "<br>");
 		});
+		
+		w.append("<br><hr>");
+		w.append("<a href='RovyComServlet?page=media'>media</a>");
+
 		w.append("</pre></p>");
 
 		w.append("</td></tr></table>");

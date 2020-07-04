@@ -100,7 +100,7 @@ public class Cam {
 		videoCapturingProcess.destroy();
 		System.out.println("video stopped");
 		
-		switchLightOff();
+		switchLight();
 		
 		String vidNameLocal = newFilename() + ".mp4";
 		String vidPath = MEDIA_PATH + vidNameLocal;
@@ -175,7 +175,7 @@ public class Cam {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		switchLightOff();
+		switchLight();
 	}
 	
 
@@ -213,7 +213,6 @@ public class Cam {
 	public void switchLight(boolean enabled) {
 		this.lightEnabled = enabled;
 		switchLight();
-		
 	}
 
 	private void switchLight() {

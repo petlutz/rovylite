@@ -23,11 +23,11 @@ public class Config {
 	}
 	
 	public String getPowerSwitchSystemCode() {
-		return "00011";
+		return "10001";
 	}
 	
 	public String getPowerSwitchUnitCode() {
-		return "3";
+		return "1";
 	}
 	
 	public Pin getPinLight() {

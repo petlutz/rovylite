@@ -83,11 +83,13 @@ public class Rovy {
 				break;
 			case PowerOn:
 //				send 00011 3 1
+				cam.switchLight(true);
 				transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "1");
 				break;
 			case PowerOff:
 //				send 00011 3 1
 				transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "0");
+				cam.switchLight(false);
 				break;
 			default:
 				throw new RovyException("unknown command");
