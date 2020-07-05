@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -21,12 +24,14 @@ public class Cam {
 	private static final int VIDEO_TIMEOUT_MILLIS = 60000 * 3; // 3 Min
 
 	private boolean lightEnabled = false;
-	
+
+	private AtomicLong timestampMediaCreation = null;
+
 	public Cam(Config config) {
 		lightOutput = GpioFactory.getInstance().provisionDigitalOutputPin(config.getPinLight(), "light", PinState.LOW);
 		switchLight(false);
 	}
-	
+
 //	public void deletePicture() {
 //		if (picture != null)
 //			picture.delete();
@@ -43,7 +48,7 @@ public class Cam {
 //		deletePicture();
 //		deleteVideo();
 //	}
-	
+
 //	public synchronized void removeOldPictures() {
 ////		try {
 ////			Runtime.getRuntime().exec("rm " + THUMPS_PATH + "thump*.jpg");
@@ -61,24 +66,26 @@ public class Cam {
 ////			e.printStackTrace();
 ////		}
 //	}
-	
-	public void captureVideo(int millis ) {
+
+	public void captureVideo(int millis) {
+		deselectMedia();
 		captureVideoAsync(VIDEO_TIMEOUT_MILLIS);
 		RovyUtility.sleep(millis);
 		finishVideo();
+		setTimestampMediaCreation();
 	}
-	
+
 	private void captureVideoAsync(int millis) {
 		captureVideoAsync(millis, VIDEO_BORDER_MILLIS);
 	}
-	
+
 	private void captureVideoAsync(int millis, int borderMillis) {
 //		waitForVideo();
 //		deleteVideo();
 //		removeOldVideos();
-		
+
 		int millisWithBorder = millis + borderMillis;
-		
+
 		String cmd = "raspivid -o " + MEDIA_PATH + "video.h264 -fps 30 -w 640 -h 480 -t " + millisWithBorder;
 		try {
 			System.out.println(cmd);
@@ -87,24 +94,22 @@ public class Cam {
 			RovyUtility.sleep(borderMillis);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-	
-
 
 	private void finishVideo() {
 		if (videoCapturingProcess == null)
 			return;
-		
+
 		RovyUtility.sleep(VIDEO_BORDER_MILLIS);
 		videoCapturingProcess.destroy();
 		System.out.println("video stopped");
-		
+
 		switchLight();
-		
+
 		String vidNameLocal = newFilename() + ".mp4";
 		String vidPath = MEDIA_PATH + vidNameLocal;
-		
+
 		String cmd = "MP4Box -fps 30 -add " + MEDIA_PATH + "video.h264 " + vidPath;
 		try {
 			System.out.println(cmd);
@@ -119,8 +124,7 @@ public class Cam {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 //	private void waitForVideo()  {
 //		if (videoCapturingProcess == null)
 //			return;
@@ -150,16 +154,13 @@ public class Cam {
 //			e.printStackTrace();
 //		} 
 //	}
-	
+
 	private String newFilename() {
 		return "rovy-" + DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS").format(LocalDateTime.now());
 	}
-	
+
 	public void captureBigPicture() {
-//		deletePicture();
-//		removeOldPictures();
-		
-		
+		deselectMedia();
 		String picNameLocal = newFilename() + ".jpg";
 		String picPath = MEDIA_PATH + picNameLocal;
 		String cmd = "raspistill -o " + picPath;
@@ -176,17 +177,17 @@ public class Cam {
 			e.printStackTrace();
 		}
 		switchLight();
+		setTimestampMediaCreation();
 	}
-	
-
 
 	public void capturePicture(boolean thump) {
-		String picNameLocal = newFilename()  + ".jpg";
+		deselectMedia();
+		String picNameLocal = newFilename() + ".jpg";
 		String picPath = MEDIA_PATH + picNameLocal;
 		String cmd = "raspistill -o " + picPath + " -w 640 -h 480 -q 50";
-		if (thump) 
+		if (thump)
 			cmd += " -t 100";
-			
+
 		switchLightOn();
 		try {
 			Process p = Runtime.getRuntime().exec(cmd);
@@ -200,109 +201,119 @@ public class Cam {
 			e.printStackTrace();
 		}
 		switchLight();
+		setTimestampMediaCreation();
 	}
-	
+
+	private void setTimestampMediaCreation() {
+		timestampMediaCreation = new AtomicLong(new Date().getTime());
+	}
+
+	public Date getTimestampMediaCreation() {
+		return timestampMediaCreation != null ? new Date(timestampMediaCreation.get()) : null;
+	}
+
 	public File getPicture() {
 		return picture;
 	}
-	
+
 	public File getVideo() {
 		return video;
 	}
-	
+
 	public void switchLight(boolean enabled) {
 		this.lightEnabled = enabled;
 		switchLight();
 	}
 
 	private void switchLight() {
-		if (lightEnabled) 
+		if (lightEnabled)
 			switchLightOn();
 		else
 			switchLightOff();
 	}
-	
+
 	private void switchLightOn() {
-			lightOutput.high();
+		lightOutput.high();
 	}
-	
+
 	private void switchLightOff() {
 		lightOutput.low();
 	}
-	
-	
+
 	private String callCmdAndGetOutput(String cmd) {
-	
+
 		try {
 			Process p = Runtime.getRuntime().exec(cmd);
-			
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			
+
 			String line = null;
 			String result = null;
-			while ( (line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null) {
 				if (line != null)
 					result = line.trim();
-			};
-			
+			}
+			;
+
 			p.waitFor();
-			
+
 			reader.close();
-			
+
 			return result;
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "error";
-		
+
 	}
-	
+
 	public void clearMediaCache() {
-		
+
 		File dir = new File(MEDIA_PATH);
-		
+
 		String[] files = dir.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.startsWith("rovy") && (name.endsWith(".jpg") || name.endsWith(".mp4"));
 			}
 		});
-		
-		
-		
+
 		for (String file : files) {
 			File f = new File(MEDIA_PATH + file);
 			System.out.println("delete " + f.getName());
 			f.delete();
 		}
-			
-		
+
 	}
 
 	public void deselectMedia() {
-		video=null;
-		picture=null;
+		video = null;
+		picture = null;
+		timestampMediaCreation = null;
 	}
-	
+
 	public void fillTelemetryData(String prefix, RovyTelemetryData telemetryData) {
-		
+
 		String cmdMediaPathSize = "du -h -s ./" + MEDIA_PATH;
 		String cmdDf = "df --output=avail -h ./" + MEDIA_PATH;
-		
+
 		String mediaPathSize = callCmdAndGetOutput(cmdMediaPathSize);
 		String df = callCmdAndGetOutput(cmdDf);
-		
+
 		telemetryData.getEntries().add(prefix + "mediaPathSize: " + mediaPathSize);
 		telemetryData.getEntries().add(prefix + "df: " + df);
 		telemetryData.getEntries().add(prefix + "lightEnabled: " + lightEnabled);
 		telemetryData.getEntries().add(prefix + "lightPinState: " + lightOutput.getState());
 		telemetryData.getEntries().add(prefix + "picture: " + picture);
 		telemetryData.getEntries().add(prefix + "video: " + video);
-		telemetryData.getEntries().add(prefix + "videoCapturingProcessAlive: " + (videoCapturingProcess != null ? videoCapturingProcess.isAlive() : "no process"));
+		Date mediaCreation = getTimestampMediaCreation();
+		telemetryData.getEntries().add(prefix + "mediacreation: " + (mediaCreation != null ? DateFormat.getInstance().format(mediaCreation) : "null"));
+		telemetryData.getEntries().add(prefix + "videoCapturingProcessAlive: "
+				+ (videoCapturingProcess != null ? videoCapturingProcess.isAlive() : "no process"));
 	}
 
 //	public synchronized void takeThump()  {
@@ -375,12 +386,12 @@ public class Cam {
 //	private String lastThumpFile;
 
 	private GpioPinDigitalOutput lightOutput;
-	
+
 	private File picture;
-	
+
 	private Process videoCapturingProcess;
-	
+
 	private File video;
-	
+
 	private String MEDIA_PATH = "media/";
 }

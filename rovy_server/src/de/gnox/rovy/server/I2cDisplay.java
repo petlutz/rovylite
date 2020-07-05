@@ -998,9 +998,11 @@ public class I2cDisplay {
 			clear();
 			RovyUtility.sleep(500);
 			showBuffer(bufEyesClosed2);
+			RovyUtility.sleep(300);
 			showBuffer(bufEyesClosed1);
+			RovyUtility.sleep(300);
 			showBuffer(bufNormal);
-			Thread.sleep(2000);
+			RovyUtility.sleep(300);
 			clear();
 			enabledExternal.set(true);
 //			new Thread(this).start();
@@ -1013,7 +1015,9 @@ public class I2cDisplay {
 		try {
 			enabledExternal.set(false);
 			showBuffer(bufEyesClosed1);
+			RovyUtility.sleep(300);
 			showBuffer(bufEyesClosed2);
+			RovyUtility.sleep(300);
 			clear();
 			enabledInternal.set(false);
 			display.write(0, (byte) 0xae); // display off

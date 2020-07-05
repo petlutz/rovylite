@@ -1,6 +1,6 @@
 package de.gnox.rovy.server;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Date;
 
 import de.gnox.rovy.api.RovyCommand;
 import de.gnox.rovy.api.RovyTelemetryData;
@@ -22,9 +22,13 @@ public class Rovy implements Runnable {
 		initRaspIo();
 		System.out.println("raspinit fertig");
 		display = new I2cDisplay();
-
+		
 		new Thread(this).start();
 		// display = new I2cDisplay();
+
+		display.switchOn();
+		RovyUtility.sleep(5000);
+		display.switchOff();
 	}
 
 	public void initRaspIo() {
@@ -183,8 +187,19 @@ public class Rovy implements Runnable {
 					display.getCurrentBuffer().setPixel(127, 1, true);
 				}
 				display.update();
-			}			
+			}
+			
+			Date lastShot = cam.getTimestampMediaCreation();
+			if (lastShot != null) {
+				Date now = new Date();
+				if (now.getTime() - lastShot.getTime() > 60000l )
+					cam.deselectMedia();
+			}
+			
+			
+			
 			blink = !blink;
+			
 		}
 	}
 
