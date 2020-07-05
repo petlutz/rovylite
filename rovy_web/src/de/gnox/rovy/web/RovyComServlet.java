@@ -165,7 +165,7 @@ public class RovyComServlet extends HttpServlet {
 		w.append("<button type='submit' name='command' value='LightOff' style='font-size: xx-large;'>light off</button>");
 		w.append("</form>");
 	
-		w.append("</center></td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640;'>");
+		w.append("</center></td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640;'><center>");
 		String camPicture = rover.getCamPicture();
 		String camVideo = rover.getCamVideo();
 		if (camVideo != null) {
@@ -177,16 +177,17 @@ public class RovyComServlet extends HttpServlet {
 		if (camPicture != null)
 			w.append("<p><img src='" + camPicture + "' alt='no image'></p>");
 
-		w.append("<p><u>Telemetry Data</u>");
-		w.append("<pre>");
+
+		w.append("</center></td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640; background-color: #abc; padding:8;'>");
+		
+		w.append("<p><pre><u>Telemetry Data</u><br>");
 		rover.getTelemetryData().getEntries().forEach(msg -> {
 			w.append(msg + "<br>");
-		});
-		
-		w.append("<br><hr>");
-		w.append("<a href='RovyComServlet?page=media'>media</a>");
-
+		});		
 		w.append("</pre></p>");
+		
+		w.append("</td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640; background-color: #abc; padding:8;'>");
+		w.append("<a href='RovyComServlet?page=media'>media</a>");
 
 		w.append("</td></tr></table>");
 		// w.append("Telemetry Data: " + telemetryData);
