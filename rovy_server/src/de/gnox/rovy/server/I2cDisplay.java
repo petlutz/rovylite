@@ -1,12 +1,14 @@
 package de.gnox.rovy.server;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
-public class I2cDisplay implements Runnable {
+public class I2cDisplay {
 
 	public static final int DISPLAY_ADDR = 0x3c;
 
@@ -15,13 +17,318 @@ public class I2cDisplay implements Runnable {
 
 	public static final int DISPLAY_H8 = DISPLAY_H / 8;
 
-	I2CDevice display;
+	private static String[] xpm_0 = {
+			"  ......  ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			"  ......  " };
+
+	private static String[] xpm_1 = {
+			"       .  ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .  " };
+
+	private static String[] xpm_2 = {
+			"  ......  ",
+			" ........ ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"  ....... ",
+			" ........ ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ........ ",
+			"  ......  " };
+
+	
+	private static String[] xpm_3 = {
+			"  ......  ",
+			" ........ ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			" ........ ",
+			" ........ ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			" ........ ",
+			"  ......  " };
+
+	private static String[] xpm_4 = {
+			"  .    .  ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			"  ....... ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .  " };
+
+	private static String[] xpm_5 = {
+			"  ......  ",
+			" ........ ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" .......  ",
+			"  ....... ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			" ........ ",
+			"  ......  " };
+
+	private static String[] xpm_6 = {
+			"  ......  ",
+			" ........ ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" .......  ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			"  ......  " };
+
+	private static String[] xpm_7 = {
+			"  ......  ",
+			" ........ ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .  " };
+
+	
+	private static String[] xpm_8 = {
+			"  ......  ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			"  ......  " };
+	
+	private static String[] xpm_9 = {
+			"  ......  ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			"  ....... ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			"       .. ",
+			" ........ ",
+			"  ......  " };
+	
+	private static String[] xpm_point = {
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"    ..    ",
+			"    ..    " };
+
+	private static String[] xpm_dpoint = {
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"    ..    ",
+			"    ..    ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"    ..    ",
+			"    ..    " };
+
+	
+	private static String[] xpm_grad  = {
+			"   ..    ",
+			" ......   ",
+			" ..  ..   ",
+			" ..  ..   ",
+			" ......   ",
+			"   ..     ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          ",
+			"          " };
+
+	private static String[] xpm_percent={
+			"  .    .. ",
+			" ...   .. ",
+			" ...  ..  ",
+			"  .   ..  ",
+			"     ..   ",
+			"     ..   ",
+			"    ..    ",
+			"    ..    ",
+			"   ..     ",
+			"   ..     ",
+			"  ..   .  ",
+			"  ..  ... ",
+			" ..   ... ",
+			" ..    .  " };
+	
+	
+	private static String[] xpm_t={
+			"  ......  ",
+			" ........ ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    " };
+	
+	private static String[] xpm_h      ={
+			"  .    .  ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			"  .    .  " };
+
+	private static String[] xpm_f      ={
+			"  ......  ",
+			" ........ ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ........ ",
+			" ........ ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			" ..       ",
+			"  .       " };
+
+	
+	private static Map<Character, String[]> char2xpm;
+
+	static {
+		char2xpm = new HashMap<Character, String[]>();
+		char2xpm.put('0', xpm_0);
+		char2xpm.put('1', xpm_1);
+		char2xpm.put('2', xpm_2);
+		char2xpm.put('3', xpm_3);
+		char2xpm.put('4', xpm_4);
+		char2xpm.put('5', xpm_5);
+		char2xpm.put('6', xpm_6);
+		char2xpm.put('7', xpm_7);
+		char2xpm.put('8', xpm_8);
+		char2xpm.put('9', xpm_9);
+		char2xpm.put('.', xpm_point);
+		char2xpm.put('%', xpm_percent);
+		char2xpm.put('°', xpm_grad);
+		char2xpm.put(':', xpm_dpoint);
+		char2xpm.put('T', xpm_t);
+		char2xpm.put('H', xpm_h);
+		char2xpm.put('F', xpm_f);
+	}
+	
+	private ScreenBuffer currentBuffer;
+	
+	private I2CDevice display;
 
 	public I2cDisplay() {
 		init();
 	}
 
 	private void init() {
+		
+		
+		
 
 		String[] xpm_lookforeward = {
 				"                                                                                                                                ",
@@ -627,7 +934,7 @@ public class I2cDisplay implements Runnable {
 			bufEyesClosed1.drawXpm(xpm_eyescl1);
 			bufEyesClosed2.drawXpm(xpm_eyescl2);
 
-			touch();
+//			touch();
 
 			// Thread t = new Thread(() -> {
 			// int x = 6;
@@ -659,7 +966,7 @@ public class I2cDisplay implements Runnable {
 
 	}
 
-	private void switchOn() {
+	synchronized public void switchOn() {
 		try {
 			display.write(0, (byte) 0xae); // display off
 			display.write(0, (byte) 0xd5); // clockdiv
@@ -687,153 +994,179 @@ public class I2cDisplay implements Runnable {
 			display.write(0, (byte) 0xa4); // resume
 			display.write(0, (byte) 0xa6); // normal (not inverted)
 			display.write(0, (byte) 0xaf); // display on
-			enabled.set(true);
+			enabledInternal.set(true);
 			clear();
 			RovyUtility.sleep(500);
 			showBuffer(bufEyesClosed2);
 			showBuffer(bufEyesClosed1);
 			showBuffer(bufNormal);
-			new Thread(this).start();
+			Thread.sleep(2000);
+			clear();
+			enabledExternal.set(true);
+//			new Thread(this).start();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void switchOff() {
+	synchronized public void switchOff() {
 		try {
+			enabledExternal.set(false);
 			showBuffer(bufEyesClosed1);
 			showBuffer(bufEyesClosed2);
 			clear();
+			enabledInternal.set(false);
 			display.write(0, (byte) 0xae); // display off
-			enabled.set(false);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	private AtomicBoolean enabled = new AtomicBoolean(false);
-	private long lastTouchTime = 0;
+	private AtomicBoolean enabledInternal = new AtomicBoolean(false);
 	
-	public void touch() {
-		lastTouchTime = System.currentTimeMillis();
-		if (!enabled.get())
-			switchOn();
-	}
+	private AtomicBoolean enabledExternal = new AtomicBoolean(false);
+
 	
-	private static long DISPLAY_TIMEOUT_MILLIS = 60000 * 5;
+//	private long lastTouchTime = 0;
+	
+//	public void touch() {
+//		lastTouchTime = System.currentTimeMillis();
+//		if (!enabled.get())
+//			switchOn();
+//	}
+	
+//	private static long DISPLAY_TIMEOUT_MILLIS = 60000 * 5;
 			
-	@Override
-	public void run() {
-		while (System.currentTimeMillis() - lastTouchTime < DISPLAY_TIMEOUT_MILLIS ) {
-			RovyUtility.sleep((long) (7000.0f * Math.random()) + 2000);
-
-			synchronized (animationEnabled) {
-
-				if (!animationEnabled.get())
-					continue;
-
-				long sw = (long) (28.0f * Math.random());
-
-				if (sw == 0) {
-					showBuffer(bufLookRight);
-					RovyUtility.sleep(1000);
-					showBuffer(bufLookLeft);
-					RovyUtility.sleep(500);
-					showBuffer(bufNormal2);
-				}
-
-				if (sw == 1) {
-					showBuffer(bufLookLeft);
-					RovyUtility.sleep(500);
-					showBuffer(bufLookRight);
-					RovyUtility.sleep(1000);
-					showBuffer(bufNormal);
-				}
-
-				if (sw == 2) {
-					showBuffer(bufLookLeft);
-					RovyUtility.sleep(1000);
-					showBuffer(bufNormal2);
-				}
-
-				if (sw == 4) {
-					showBuffer(bufLookRight);
-					RovyUtility.sleep(1000);
-					showBuffer(bufNormal);
-				}
-
-				if (sw > 4 && sw <= 8) {
-					showBuffer(bufNormal2);
-				}
-				if (sw > 8 && sw <= 12) {
-					showBuffer(bufNormal);
-				}
-
-				if (sw > 12 && sw <= 18) {
-					showBuffer(bufEyesClosed1);
-					showBuffer(bufEyesClosed2);
-					showBuffer(bufEyesClosed1);
-					showBuffer(bufNormal);
-				}
-
-				if (sw > 18 && sw <= 24) {
-					showBuffer(bufEyesClosed1);
-					showBuffer(bufEyesClosed2);
-					showBuffer(bufEyesClosed1);
-					showBuffer(bufNormal2);
-				}
-
-				if (sw > 24)
-					showBuffer(bufEyesClosed1);
-
-			}
-		}
-
-		switchOff();
+//	@Override
+//	public void run() {
+//		while (System.currentTimeMillis() - lastTouchTime < DISPLAY_TIMEOUT_MILLIS ) {
+//			RovyUtility.sleep((long) (7000.0f * Math.random()) + 2000);
+//
+//			synchronized (animationEnabled) {
+//
+//				if (!animationEnabled.get())
+//					continue;
+//
+//				long sw = (long) (28.0f * Math.random());
+//
+//				if (sw == 0) {
+//					showBuffer(bufLookRight);
+//					RovyUtility.sleep(1000);
+//					showBuffer(bufLookLeft);
+//					RovyUtility.sleep(500);
+//					showBuffer(bufNormal2);
+//				}
+//
+//				if (sw == 1) {
+//					showBuffer(bufLookLeft);
+//					RovyUtility.sleep(500);
+//					showBuffer(bufLookRight);
+//					RovyUtility.sleep(1000);
+//					showBuffer(bufNormal);
+//				}
+//
+//				if (sw == 2) {
+//					showBuffer(bufLookLeft);
+//					RovyUtility.sleep(1000);
+//					showBuffer(bufNormal2);
+//				}
+//
+//				if (sw == 4) {
+//					showBuffer(bufLookRight);
+//					RovyUtility.sleep(1000);
+//					showBuffer(bufNormal);
+//				}
+//
+//				if (sw > 4 && sw <= 8) {
+//					showBuffer(bufNormal2);
+//				}
+//				if (sw > 8 && sw <= 12) {
+//					showBuffer(bufNormal);
+//				}
+//
+//				if (sw > 12 && sw <= 18) {
+//					showBuffer(bufEyesClosed1);
+//					showBuffer(bufEyesClosed2);
+//					showBuffer(bufEyesClosed1);
+//					showBuffer(bufNormal);
+//				}
+//
+//				if (sw > 18 && sw <= 24) {
+//					showBuffer(bufEyesClosed1);
+//					showBuffer(bufEyesClosed2);
+//					showBuffer(bufEyesClosed1);
+//					showBuffer(bufNormal2);
+//				}
+//
+//				if (sw > 24)
+//					showBuffer(bufEyesClosed1);
+//
+//			}
+//		}
+//
+//		switchOff();
+//	}
+	
+	public synchronized void clear() {
+		currentBuffer = new ScreenBuffer();
+		update();
+	}
+	
+	public synchronized void update() {
+		resetPos();
+		paint(currentBuffer.buffer);		
 	}
 
-	private synchronized void showBuffer(ScreenBuffer buffer) {
-		resetPos();
-		paint(buffer.buffer);
+	public synchronized void showBuffer(ScreenBuffer buffer) {
+		currentBuffer = buffer;
+		update();
 	}
 
 	public void lookRight() {
-		synchronized (animationEnabled) {
-			setAnimationEnabled(false);
+//		synchronized (animationEnabled) {
+//			setAnimationEnabled(false);
 			showBuffer(bufLookRight);
-		}
+//		}
 	}
 
 	public void lookLeft() {
-		synchronized (animationEnabled) {
-			setAnimationEnabled(false);
+//		synchronized (animationEnabled) {
+//			setAnimationEnabled(false);
 			showBuffer(bufLookLeft);
-		}
+//		}
 	}
 
 	public void lookNormal() {
-		synchronized (animationEnabled) {
+//		synchronized (animationEnabled) {
 			showBuffer(bufNormal);
-			setAnimationEnabled(true);
-		}
+//			setAnimationEnabled(true);
+//		}
 	}
 
 	public void lookForeward() {
-		synchronized (animationEnabled) {
-			setAnimationEnabled(false);
+//		synchronized (animationEnabled) {
+//			setAnimationEnabled(false);
 			showBuffer(bufLookForeward);
-		}
+//		}
 	}
 
 	public void lookBackward() {
-		synchronized (animationEnabled) {
-			setAnimationEnabled(false);
+//		synchronized (animationEnabled) {
+//			setAnimationEnabled(false);
 			showBuffer(bufLookBackward);
-		}
+//		}
+	}
+	
+	public ScreenBuffer getCurrentBuffer() {
+		return currentBuffer;
+	}
+	
+	public boolean isEnabled() {
+		return enabledExternal.get();
 	}
 
 	private void paint(byte[] data) {
-		if (!enabled.get())
+		if (!enabledInternal.get())
 			return;
 		try {
 			display.write((byte) 0x40, data);
@@ -842,8 +1175,8 @@ public class I2cDisplay implements Runnable {
 		}
 	}
 
-	void resetPos() {
-		if (!enabled.get())
+	private void resetPos() {
+		if (!enabledInternal.get())
 			return;
 		try {
 			display.write(0, (byte) 0xb0);
@@ -854,24 +1187,24 @@ public class I2cDisplay implements Runnable {
 		}
 	}
 
-	public void clear() {
-		try {
+//	public void clear() {
+//		try {
+//
+//			byte[] data = new byte[DISPLAY_W * DISPLAY_H8];
+//
+//			for (int i = 0; i < DISPLAY_W * DISPLAY_H8; i++)
+//				data[i] = 0;
+//
+//			paint(data);
+//
+//		} catch (Exception e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
 
-			byte[] data = new byte[DISPLAY_W * DISPLAY_H8];
-
-			for (int i = 0; i < DISPLAY_W * DISPLAY_H8; i++)
-				data[i] = 0;
-
-			paint(data);
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void setAnimationEnabled(boolean animationEnabled) {
-		this.animationEnabled.set(animationEnabled);
-	}
+//	public void setAnimationEnabled(boolean animationEnabled) {
+//		this.animationEnabled.set(animationEnabled);
+//	}
 
 	ScreenBuffer bufNormal = new ScreenBuffer();
 	ScreenBuffer bufNormal2 = new ScreenBuffer();
@@ -882,9 +1215,9 @@ public class I2cDisplay implements Runnable {
 	ScreenBuffer bufEyesClosed1 = new ScreenBuffer();
 	ScreenBuffer bufEyesClosed2 = new ScreenBuffer();
 
-	private AtomicBoolean animationEnabled = new AtomicBoolean(true);
+//	private AtomicBoolean animationEnabled = new AtomicBoolean(true);
 
-	private class ScreenBuffer {
+	public static class ScreenBuffer {
 
 		private byte[] buffer;
 
@@ -915,11 +1248,26 @@ public class I2cDisplay implements Runnable {
 			else
 				buffer[idx] = (byte) (buffer[idx] & (~(1 << offset)));
 		}
+		
+		public void drawString(String str, int px, int py) {
+			int x = px;
+			for(char c : str.toCharArray()) {
+				String[] xpm = char2xpm.get(c);
+				if (xpm != null)
+					drawXpm(xpm, x, py);
+				x += 10;
+			}
+		}
 
-		public void drawXpm(String[] xpm) {
-			int y = 0;
+		
+		public void drawXpm(String[] xpm ) {
+			drawXpm(xpm, 0, 0);
+		}
+		
+		public void drawXpm(String[] xpm, int px, int py) {
+			int y = py;
 			for (String xpmLine : xpm) {
-				int x = 0;
+				int x = px;
 				for (char xpmChar : xpmLine.toCharArray()) {
 					boolean color = (xpmChar == 32 ? false : true);
 					setPixel(x, y, color);
