@@ -12,6 +12,8 @@ public class Rovy implements Runnable {
 	private Cam cam;
 
 	private Transmitter transmitter = new Transmitter();
+	
+	private PwmFan fan;
 
 	private DHT22 dht22;
 
@@ -21,8 +23,7 @@ public class Rovy implements Runnable {
 		System.out.println("NEW ROVER");
 		initRaspIo();
 		System.out.println("raspinit fertig");
-		display = new I2cDisplay();
-		
+
 		new Thread(this).start();
 		// display = new I2cDisplay();
 
@@ -36,6 +37,9 @@ public class Rovy implements Runnable {
 		config = new Config();
 		dht22 = new DHT22(config.getPinDHT22Data());
 		cam = new Cam(config);
+		fan = new PwmFan(config.getPinFanControl());
+		display = new I2cDisplay();
+		
 
 //		GpioUtil.enableNonPrivilegedAccess();
 //		try {
@@ -163,9 +167,10 @@ public class Rovy implements Runnable {
 	@Override
 	public void run() {
 		boolean blink = false;
+		int df = 10;
 		while (true) { // T:20°:20.3°
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -175,7 +180,7 @@ public class Rovy implements Runnable {
 					dht22.refreshData();
 					display.getCurrentBuffer().drawString("T:" + dht22.getTemperature() + "°", 0, 0);
 					display.getCurrentBuffer().drawString("H:" + dht22.getHumidity() + "%", 0, 16);
-					display.getCurrentBuffer().drawString("F:" + "0%", 0, 32);
+					display.getCurrentBuffer().drawString("F:" + fan.getSpeed() + "%", 0, 32);
 				} catch (Exception e) {
 					e.printStackTrace();
 					display.getCurrentBuffer().drawString("%99%", 0, 0);
@@ -196,7 +201,9 @@ public class Rovy implements Runnable {
 					cam.deselectMedia();
 			}
 			
-			
+			fan.setSpeed(fan.getSpeed() + df);
+			if (fan.getSpeed() == 0 || fan.getSpeed() == 100)
+				df = -df;
 			
 			blink = !blink;
 			

@@ -33,6 +33,10 @@ public class Config {
 	public Pin getPinLight() {
 		return RaspiPin.GPIO_05;
 	}
+
+	public int getPinFanControl() {
+		return 27;
+	}
 	
 	
 }
