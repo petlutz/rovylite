@@ -148,6 +148,10 @@ public class RovyComServlet extends HttpServlet {
 		else
 			w.append("<a href='RovyComServlet?showOffButton=true'>OFF?</a>");
 		w.append("</form>");
+		w.append("<form action='RovyComServlet'>");
+		w.append("value:<input size='5' type='text' name='temp' value='25'><br>");
+		w.append("<button type='submit' name='command' value='SetTargetTemperatur' style='font-size: xx-large;'>set target temp</button>");
+		w.append("</form>");
 		
 		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center><br>");
 
@@ -156,7 +160,7 @@ public class RovyComServlet extends HttpServlet {
 		w.append("<button type='submit' name='command' value='CaptureBigPicture' style='font-size: xx-large;'>capture big picture</button>");
 		w.append("</form>");
 		w.append("<form action='RovyComServlet'>");
-		w.append("<input size='5' type='text' name='seconds' value='15'>sec<br>");
+		w.append("sec:<input size='5' type='text' name='seconds' value='15'><br>");
 		w.append("<button type='submit' name='command' value='CaptureVideo' style='font-size: xx-large;'>capture video</button>");
 		w.append("</form>");
 		w.append("</center></td><td style=' background-color: #abc; padding:8;'><center><br>");

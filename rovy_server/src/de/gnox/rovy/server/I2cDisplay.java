@@ -261,6 +261,22 @@ public class I2cDisplay {
 			"    ..    ",
 			"    ..    " };
 	
+	private static String[] xpm_i={
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    ",
+			"    ..    " };
+	
 	private static String[] xpm_h      ={
 			"  .    .  ",
 			" ..    .. ",
@@ -315,6 +331,7 @@ public class I2cDisplay {
 		char2xpm.put('T', xpm_t);
 		char2xpm.put('H', xpm_h);
 		char2xpm.put('F', xpm_f);
+		char2xpm.put('I', xpm_i);
 	}
 	
 	private ScreenBuffer currentBuffer;

@@ -12,12 +12,14 @@ public class Rovy implements Runnable {
 	private Cam cam;
 
 	private Transmitter transmitter = new Transmitter();
-	
+
 	private PwmFan fan;
 
 	private DHT22 dht22;
 
 	private I2cDisplay display;
+
+	private int targetTemperature = 25;
 
 	public Rovy() {
 		System.out.println("NEW ROVER");
@@ -39,7 +41,6 @@ public class Rovy implements Runnable {
 		cam = new Cam(config);
 		fan = new PwmFan(config.getPinFanControl());
 		display = new I2cDisplay();
-		
 
 //		GpioUtil.enableNonPrivilegedAccess();
 //		try {
@@ -82,6 +83,9 @@ public class Rovy implements Runnable {
 			case CaptureVideo:
 				captureVideo(command);
 				break;
+			case SetTargetTemperatur:
+				setTargetTemperatur(command);
+				break;
 			case LightOn:
 				cam.switchLight(true);
 				break;
@@ -123,6 +127,20 @@ public class Rovy implements Runnable {
 		return result;
 	}
 
+	private void setTargetTemperatur(RovyCommand command) {
+		String temp = command.getParameter("temp");
+		try {
+			int targetTemp = Integer.parseInt(temp);
+			if (targetTemp < 0)
+				targetTemp = 0;
+			if (targetTemp > 99)
+				targetTemp = 99;
+			this.targetTemperature = targetTemp;
+		} catch (NumberFormatException nfe) {
+			nfe.printStackTrace();
+		}
+	}
+
 //	private void replayCommandHistory() {
 //		for (RovyCommand cmd : commandHistory) {
 //			performCommandInternal(cmd);
@@ -137,9 +155,11 @@ public class Rovy implements Runnable {
 		telemetryData.getEntries().add("lastCommand: " + lastCommand);
 
 		telemetryData.getEntries().add("temp: " + dht22.getTemperature() + "°");
+		telemetryData.getEntries().add("targettemp: " + targetTemperature + "°");
 		telemetryData.getEntries().add("humidity: " + dht22.getHumidity() + "%");
 
 		cam.fillTelemetryData("cam: ", telemetryData);
+		fan.fillTelemetryData("fan: ", telemetryData);
 		return telemetryData;
 	}
 
@@ -167,10 +187,9 @@ public class Rovy implements Runnable {
 	@Override
 	public void run() {
 		boolean blink = false;
-		int df = 10;
 		while (true) { // T:20°:20.3°
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -178,9 +197,11 @@ public class Rovy implements Runnable {
 				display.getCurrentBuffer().clear();
 				try {
 					dht22.refreshData();
-					display.getCurrentBuffer().drawString("T:" + dht22.getTemperature() + "°", 0, 0);
-					display.getCurrentBuffer().drawString("H:" + dht22.getHumidity() + "%", 0, 16);
-					display.getCurrentBuffer().drawString("F:" + fan.getSpeed() + "%", 0, 32);
+					char tr = ':';//blink ? ':' : ' ';
+					display.getCurrentBuffer().drawString("TT " + tr + " " + targetTemperature + "°", 0, 0);
+					display.getCurrentBuffer().drawString("TI " + tr + " " + dht22.getTemperature() + "°", 0, 16);
+					display.getCurrentBuffer().drawString("H  " + tr + " " + dht22.getHumidity() + "%", 0, 32);
+					display.getCurrentBuffer().drawString("F  " + tr + " " + fan.getSpeed() + "%", 0, 48);
 				} catch (Exception e) {
 					e.printStackTrace();
 					display.getCurrentBuffer().drawString("%99%", 0, 0);
@@ -193,20 +214,23 @@ public class Rovy implements Runnable {
 				}
 				display.update();
 			}
-			
+
 			Date lastShot = cam.getTimestampMediaCreation();
 			if (lastShot != null) {
 				Date now = new Date();
-				if (now.getTime() - lastShot.getTime() > 60000l )
+				if (now.getTime() - lastShot.getTime() > 60000l)
 					cam.deselectMedia();
 			}
-			
-			fan.setSpeed(fan.getSpeed() + df);
-			if (fan.getSpeed() == 0 || fan.getSpeed() == 100)
-				df = -df;
-			
+
+			float tempDiff = dht22.getTemperature() - (float)targetTemperature;
+			if (tempDiff > 0) {
+				fan.setSpeed((int) (tempDiff * 40.0f));
+			} else {
+				fan.stop();
+			}
+
 			blink = !blink;
-			
+
 		}
 	}
 

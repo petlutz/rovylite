@@ -311,7 +311,7 @@ public class Cam {
 		telemetryData.getEntries().add(prefix + "picture: " + picture);
 		telemetryData.getEntries().add(prefix + "video: " + video);
 		Date mediaCreation = getTimestampMediaCreation();
-		telemetryData.getEntries().add(prefix + "mediacreation: " + (mediaCreation != null ? DateFormat.getInstance().format(mediaCreation) : "null"));
+		telemetryData.getEntries().add(prefix + "mediacreation: " + (mediaCreation != null ? mediaCreation.toString() : "null"));
 		telemetryData.getEntries().add(prefix + "videoCapturingProcessAlive: "
 				+ (videoCapturingProcess != null ? videoCapturingProcess.isAlive() : "no process"));
 	}

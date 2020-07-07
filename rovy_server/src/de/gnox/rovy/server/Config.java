@@ -34,8 +34,8 @@ public class Config {
 		return RaspiPin.GPIO_05;
 	}
 
-	public int getPinFanControl() {
-		return 27;
+	public Pin getPinFanControl() {
+		return RaspiPin.GPIO_26;
 	}
 	
 	
