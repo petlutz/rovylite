@@ -350,6 +350,7 @@ public class I2cDisplay {
 		char2xpm.put('H', xpm_h);
 		char2xpm.put('F', xpm_f);
 		char2xpm.put('!', xpm_excl);
+		char2xpm.put('I', xpm_i);
 	}
 
 	private ScreenBuffer currentBuffer;
