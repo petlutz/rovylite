@@ -38,5 +38,13 @@ public class Config {
 		return RaspiPin.GPIO_26;
 	}
 	
+	public Pin getPinButton1() {
+		return RaspiPin.GPIO_28;
+	}
+	
+	public Pin getPinButton2() {
+		return RaspiPin.GPIO_25;
+	}
+	
 	
 }

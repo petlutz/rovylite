@@ -17,299 +17,80 @@ public class I2cDisplay {
 
 	public static final int DISPLAY_H8 = DISPLAY_H / 8;
 
-	private static String[] xpm_0 = {
-			"  ......  ",
-			" ........ ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			"  ......  " };
+	// @formatter:off
+	private static String[] xpm_0 = { "  ......  ", " ........ ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ........ ", "  ......  " };
 
-	private static String[] xpm_1 = {
-			"       .  ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .  " };
+	private static String[] xpm_1 = { "       .  ", "       .. ", "       .. ", "       .. ", "       .. ",
+			"       .. ", "       .. ", "       .. ", "       .. ", "       .. ", "       .. ", "       .. ",
+			"       .. ", "       .  " };
 
-	private static String[] xpm_2 = {
-			"  ......  ",
-			" ........ ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"  ....... ",
-			" ........ ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ........ ",
-			"  ......  " };
+	private static String[] xpm_2 = { "  ......  ", " ........ ", "       .. ", "       .. ", "       .. ",
+			"       .. ", "  ....... ", " ........ ", " ..       ", " ..       ", " ..       ", " ..       ",
+			" ........ ", "  ......  " };
 
-	
-	private static String[] xpm_3 = {
-			"  ......  ",
-			" ........ ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			" ........ ",
-			" ........ ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			" ........ ",
-			"  ......  " };
+	private static String[] xpm_3 = { "  ......  ", " ........ ", "       .. ", "       .. ", "       .. ",
+			"       .. ", " ........ ", " ........ ", "       .. ", "       .. ", "       .. ", "       .. ",
+			" ........ ", "  ......  " };
 
-	private static String[] xpm_4 = {
-			"  .    .  ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			"  ....... ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .  " };
+	private static String[] xpm_4 = { "  .    .  ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ..    .. ", " ........ ", "  ....... ", "       .. ", "       .. ", "       .. ", "       .. ",
+			"       .. ", "       .  " };
 
-	private static String[] xpm_5 = {
-			"  ......  ",
-			" ........ ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" .......  ",
-			"  ....... ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			" ........ ",
-			"  ......  " };
+	private static String[] xpm_5 = { "  ......  ", " ........ ", " ..       ", " ..       ", " ..       ",
+			" ..       ", " .......  ", "  ....... ", "       .. ", "       .. ", "       .. ", "       .. ",
+			" ........ ", "  ......  " };
 
-	private static String[] xpm_6 = {
-			"  ......  ",
-			" ........ ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" .......  ",
-			" ........ ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			"  ......  " };
+	private static String[] xpm_6 = { "  ......  ", " ........ ", " ..       ", " ..       ", " ..       ",
+			" ..       ", " .......  ", " ........ ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ........ ", "  ......  " };
 
-	private static String[] xpm_7 = {
-			"  ......  ",
-			" ........ ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .  " };
+	private static String[] xpm_7 = { "  ......  ", " ........ ", "       .. ", "       .. ", "       .. ",
+			"       .. ", "       .. ", "       .. ", "       .. ", "       .. ", "       .. ", "       .. ",
+			"       .. ", "       .  " };
 
-	
-	private static String[] xpm_8 = {
-			"  ......  ",
-			" ........ ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			" ........ ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			"  ......  " };
-	
-	private static String[] xpm_9 = {
-			"  ......  ",
-			" ........ ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			"  ....... ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			"       .. ",
-			" ........ ",
-			"  ......  " };
-	
-	private static String[] xpm_point = {
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"    ..    ",
-			"    ..    " };
+	private static String[] xpm_8 = { "  ......  ", " ........ ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ..    .. ", " ........ ", " ........ ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ........ ", "  ......  " };
 
-	private static String[] xpm_dpoint = {
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"    ..    ",
-			"    ..    ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"    ..    ",
-			"    ..    " };
+	private static String[] xpm_9 = { "  ......  ", " ........ ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ..    .. ", " ........ ", "  ....... ", "       .. ", "       .. ", "       .. ", "       .. ",
+			" ........ ", "  ......  " };
 
-	
-	private static String[] xpm_grad  = {
-			"   ..    ",
-			" ......   ",
-			" ..  ..   ",
-			" ..  ..   ",
-			" ......   ",
-			"   ..     ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          ",
-			"          " };
+	private static String[] xpm_point = { "          ", "          ", "          ", "          ", "          ",
+			"          ", "          ", "          ", "          ", "          ", "          ", "          ",
+			"    ..    ", "    ..    " };
 
-	private static String[] xpm_percent={
-			"  .    .. ",
-			" ...   .. ",
-			" ...  ..  ",
-			"  .   ..  ",
-			"     ..   ",
-			"     ..   ",
-			"    ..    ",
-			"    ..    ",
-			"   ..     ",
-			"   ..     ",
-			"  ..   .  ",
-			"  ..  ... ",
-			" ..   ... ",
-			" ..    .  " };
-	
-	
-	private static String[] xpm_t={
-			"  ......  ",
-			" ........ ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    " };
-	
-	private static String[] xpm_i={
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    ",
-			"    ..    " };
-	
-	private static String[] xpm_h      ={
-			"  .    .  ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ........ ",
-			" ........ ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			" ..    .. ",
-			"  .    .  " };
+	private static String[] xpm_dpoint = { "          ", "          ", "          ", "          ", "    ..    ",
+			"    ..    ", "          ", "          ", "          ", "          ", "          ", "          ",
+			"    ..    ", "    ..    " };
 
-	private static String[] xpm_f      ={
-			"  ......  ",
-			" ........ ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ........ ",
-			" ........ ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			" ..       ",
-			"  .       " };
+	private static String[] xpm_grad = { "   ..    ", " ......   ", " ..  ..   ", " ..  ..   ", " ......   ",
+			"   ..     ", "          ", "          ", "          ", "          ", "          ", "          ",
+			"          ", "          " };
 
-	
+	private static String[] xpm_percent = { "  .    .. ", " ...   .. ", " ...  ..  ", "  .   ..  ", "     ..   ",
+			"     ..   ", "    ..    ", "    ..    ", "   ..     ", "   ..     ", "  ..   .  ", "  ..  ... ",
+			" ..   ... ", " ..    .  " };
+
+	private static String[] xpm_t = { "  ......  ", " ........ ", "    ..    ", "    ..    ", "    ..    ",
+			"    ..    ", "    ..    ", "    ..    ", "    ..    ", "    ..    ", "    ..    ", "    ..    ",
+			"    ..    ", "    ..    " };
+
+	private static String[] xpm_h = { "  .    .  ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ..    .. ", " ........ ", " ........ ", " ..    .. ", " ..    .. ", " ..    .. ", " ..    .. ",
+			" ..    .. ", "  .    .  " };
+
+	private static String[] xpm_f = { "  ......  ", " ........ ", " ..       ", " ..       ", " ..       ",
+			" ..       ", " ........ ", " ........ ", " ..       ", " ..       ", " ..       ", " ..       ",
+			" ..       ", "  .       " };
+
+	private static String[] xpm_excl = { "    ..    ", "    ..    ", "    ..    ", "    ..    ", "    ..    ",
+			"    ..    ", "    ..    ", "    ..    ", "    ..    ", "    ..    ", "          ", "          ",
+			"    ..    ", "    ..    " };
+	// @formatter:on
+
 	private static Map<Character, String[]> char2xpm;
 
 	static {
@@ -331,11 +112,11 @@ public class I2cDisplay {
 		char2xpm.put('T', xpm_t);
 		char2xpm.put('H', xpm_h);
 		char2xpm.put('F', xpm_f);
-		char2xpm.put('I', xpm_i);
+		char2xpm.put('!', xpm_excl);
 	}
-	
+
 	private ScreenBuffer currentBuffer;
-	
+
 	private I2CDevice display;
 
 	public I2cDisplay() {
@@ -343,9 +124,6 @@ public class I2cDisplay {
 	}
 
 	private void init() {
-		
-		
-		
 
 		String[] xpm_lookforeward = {
 				"                                                                                                                                ",
@@ -941,7 +719,6 @@ public class I2cDisplay {
 
 			display = i2c.getDevice(DISPLAY_ADDR);
 
-
 			bufNormal.drawXpm(xpm_norm1);
 			bufNormal2.drawXpm(xpm_norm2);
 			bufLookLeft.drawXpm(xpm_lookleft);
@@ -1011,17 +788,16 @@ public class I2cDisplay {
 			display.write(0, (byte) 0xa4); // resume
 			display.write(0, (byte) 0xa6); // normal (not inverted)
 			display.write(0, (byte) 0xaf); // display on
-			enabledInternal.set(true);
-			clear();
-			RovyUtility.sleep(500);
+			// clear();
+			// RovyUtility.sleep(100);
 			showBuffer(bufEyesClosed2);
-			RovyUtility.sleep(300);
+			RovyUtility.sleep(100);
 			showBuffer(bufEyesClosed1);
-			RovyUtility.sleep(300);
+			RovyUtility.sleep(100);
 			showBuffer(bufNormal);
-			RovyUtility.sleep(300);
-			clear();
-			enabledExternal.set(true);
+			RovyUtility.sleep(100);
+			// clear();
+			enabled.set(true);
 //			new Thread(this).start();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -1029,35 +805,40 @@ public class I2cDisplay {
 	}
 
 	synchronized public void switchOff() {
+		if (!isEnabled())
+			return;
 		try {
-			enabledExternal.set(false);
+			enabled.set(false);
 			showBuffer(bufEyesClosed1);
-			RovyUtility.sleep(300);
+			RovyUtility.sleep(100);
 			showBuffer(bufEyesClosed2);
-			RovyUtility.sleep(300);
+			RovyUtility.sleep(100);
 			clear();
-			enabledInternal.set(false);
 			display.write(0, (byte) 0xae); // display off
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private AtomicBoolean enabledInternal = new AtomicBoolean(false);
-	
-	private AtomicBoolean enabledExternal = new AtomicBoolean(false);
 
-	
+	synchronized public void toggleOnOff() {
+		if (isEnabled())
+			switchOff();
+		else
+			switchOn();
+	}
+
+	private AtomicBoolean enabled = new AtomicBoolean(false);
+
 //	private long lastTouchTime = 0;
-	
+
 //	public void touch() {
 //		lastTouchTime = System.currentTimeMillis();
 //		if (!enabled.get())
 //			switchOn();
 //	}
-	
+
 //	private static long DISPLAY_TIMEOUT_MILLIS = 60000 * 5;
-			
+
 //	@Override
 //	public void run() {
 //		while (System.currentTimeMillis() - lastTouchTime < DISPLAY_TIMEOUT_MILLIS ) {
@@ -1127,68 +908,84 @@ public class I2cDisplay {
 //
 //		switchOff();
 //	}
-	
+
 	public synchronized void clear() {
+		if (!isEnabled())
+		 return;
 		currentBuffer = new ScreenBuffer();
-		update();
+		updateInternal();
 	}
 	
 	public synchronized void update() {
-		resetPos();
-		paint(currentBuffer.buffer);		
+		if (!isEnabled())
+			 return;
+		updateInternal();		
 	}
 
-	public synchronized void showBuffer(ScreenBuffer buffer) {
+	private void updateInternal() {
+		resetPos();
+		paint(currentBuffer.buffer);
+	}
+
+	private void showBuffer(ScreenBuffer buffer) {
 		currentBuffer = buffer;
-		update();
+		updateInternal();
 	}
 
 	public void lookRight() {
+		if (!isEnabled())
+			return;
 //		synchronized (animationEnabled) {
 //			setAnimationEnabled(false);
-			showBuffer(bufLookRight);
+		showBuffer(bufLookRight);
 //		}
 	}
 
 	public void lookLeft() {
+		if (!isEnabled())
+			return;
 //		synchronized (animationEnabled) {
 //			setAnimationEnabled(false);
-			showBuffer(bufLookLeft);
+		showBuffer(bufLookLeft);
 //		}
 	}
 
 	public void lookNormal() {
+		if (!isEnabled()) 
+			return;
 //		synchronized (animationEnabled) {
-			showBuffer(bufNormal);
+		showBuffer(bufNormal);
 //			setAnimationEnabled(true);
 //		}
 	}
 
 	public void lookForeward() {
+		if (!isEnabled()) 
+			return;
 //		synchronized (animationEnabled) {
 //			setAnimationEnabled(false);
-			showBuffer(bufLookForeward);
+		showBuffer(bufLookForeward);
 //		}
 	}
 
 	public void lookBackward() {
+		if (!isEnabled()) 
+			return;
 //		synchronized (animationEnabled) {
 //			setAnimationEnabled(false);
-			showBuffer(bufLookBackward);
+		showBuffer(bufLookBackward);
 //		}
 	}
-	
+
 	public ScreenBuffer getCurrentBuffer() {
 		return currentBuffer;
 	}
-	
+
 	public boolean isEnabled() {
-		return enabledExternal.get();
+		return enabled.get();
 	}
 
 	private void paint(byte[] data) {
-		if (!enabledInternal.get())
-			return;
 		try {
 			display.write((byte) 0x40, data);
 		} catch (Exception e) {
@@ -1197,8 +994,6 @@ public class I2cDisplay {
 	}
 
 	private void resetPos() {
-		if (!enabledInternal.get())
-			return;
 		try {
 			display.write(0, (byte) 0xb0);
 			display.write(0, (byte) 0x00);
@@ -1269,10 +1064,10 @@ public class I2cDisplay {
 			else
 				buffer[idx] = (byte) (buffer[idx] & (~(1 << offset)));
 		}
-		
+
 		public void drawString(String str, int px, int py) {
 			int x = px;
-			for(char c : str.toCharArray()) {
+			for (char c : str.toCharArray()) {
 				String[] xpm = char2xpm.get(c);
 				if (xpm != null)
 					drawXpm(xpm, x, py);
@@ -1280,11 +1075,10 @@ public class I2cDisplay {
 			}
 		}
 
-		
-		public void drawXpm(String[] xpm ) {
+		public void drawXpm(String[] xpm) {
 			drawXpm(xpm, 0, 0);
 		}
-		
+
 		public void drawXpm(String[] xpm, int px, int py) {
 			int y = py;
 			for (String xpmLine : xpm) {

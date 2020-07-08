@@ -5,7 +5,7 @@ import java.util.Date;
 import de.gnox.rovy.api.RovyCommand;
 import de.gnox.rovy.api.RovyTelemetryData;
 
-public class Rovy implements Runnable {
+public class Rovy  {
 
 	private Config config;
 
@@ -21,12 +21,17 @@ public class Rovy implements Runnable {
 
 	private int targetTemperature = 25;
 
+	private Button btn1;
+
+	private Button btn2;
+
 	public Rovy() {
 		System.out.println("NEW ROVER");
 		initRaspIo();
 		System.out.println("raspinit fertig");
 
-		new Thread(this).start();
+		new Thread(new SlowUpdater()).start();
+		new Thread(new FastUpdater()).start();
 		// display = new I2cDisplay();
 
 		display.switchOn();
@@ -41,6 +46,30 @@ public class Rovy implements Runnable {
 		cam = new Cam(config);
 		fan = new PwmFan(config.getPinFanControl());
 		display = new I2cDisplay();
+
+		btn1 = new Button(config.getPinButton1()) {
+			@Override
+			public void onPressed() {
+				cam.toggleLight();
+			}
+
+			@Override
+			public void onLongPressed() {
+				powerOn();
+			}
+		};
+
+		btn2 = new Button(config.getPinButton2()) {
+			@Override
+			public void onPressed() {
+				display.toggleOnOff();
+			}
+
+			@Override
+			public void onLongPressed() {
+				powerOff();
+			}
+		};
 
 //		GpioUtil.enableNonPrivilegedAccess();
 //		try {
@@ -87,10 +116,10 @@ public class Rovy implements Runnable {
 				setTargetTemperatur(command);
 				break;
 			case LightOn:
-				cam.switchLight(true);
+				lightOn();
 				break;
 			case LightOff:
-				cam.switchLight(false);
+				lightOff();
 				break;
 			case ClearMediaCache:
 				getCam().clearMediaCache();
@@ -98,15 +127,11 @@ public class Rovy implements Runnable {
 				break;
 			case PowerOn:
 //				send 00011 3 1
-				cam.switchLight(true);
-				transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "1");
-				display.switchOn();
+				powerOn();
 				break;
 			case PowerOff:
 //				send 00011 3 1
-				transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "0");
-				cam.switchLight(false);
-				display.switchOff();
+				powerOff();
 				break;
 			case DisplayOn:
 				display.switchOn();
@@ -125,6 +150,27 @@ public class Rovy implements Runnable {
 		}
 		lastCommand = command;
 		return result;
+	}
+
+	private void lightOff() {
+		cam.switchLight(false);
+	}
+
+	private void lightOn() {
+		cam.switchLight(true);
+	}
+
+	
+	private void powerOff() {
+		transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "0");
+		lightOff();
+		display.switchOff();
+	}
+
+	private void powerOn() {
+		lightOn();
+		transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "1");
+		display.switchOn();
 	}
 
 	private void setTargetTemperatur(RovyCommand command) {
@@ -184,24 +230,45 @@ public class Rovy implements Runnable {
 
 	private static Rovy roverInstance = null;
 
-	@Override
-	public void run() {
-		boolean blink = false;
-		while (true) { // T:20°:20.3°
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+	private class SlowUpdater implements Runnable {
+
+		public void run() {
+			boolean blink = false;
+			while (true) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				updateDisplay(blink);
+				updateCam();
+				updateFan();
+
+				blink = !blink;
+
 			}
+		}
+
+		private void updateFan() {
+			fan.update(dht22.getTemperature(), (float) targetTemperature);
+//			fan.setSpeed(targetTemperature);
+		}
+
+		private void updateCam() {
+			cam.update();
+		}
+
+		private void updateDisplay(boolean blink) {
 			if (display.isEnabled()) {
 				display.getCurrentBuffer().clear();
 				try {
 					dht22.refreshData();
-					char tr = ':';//blink ? ':' : ' ';
-					display.getCurrentBuffer().drawString("TT " + tr + " " + targetTemperature + "°", 0, 0);
-					display.getCurrentBuffer().drawString("TI " + tr + " " + dht22.getTemperature() + "°", 0, 16);
-					display.getCurrentBuffer().drawString("H  " + tr + " " + dht22.getHumidity() + "%", 0, 32);
-					display.getCurrentBuffer().drawString("F  " + tr + " " + fan.getSpeed() + "%", 0, 48);
+					char tr = ':';// blink ? ':' : ' ';
+
+					display.getCurrentBuffer().drawString("T " + tr + " " + dht22.getTemperature() + "°", 0, 0);
+					display.getCurrentBuffer().drawString("T!" + tr + " " + targetTemperature + "°", 0, 16);
+					display.getCurrentBuffer().drawString("H " + tr + " " + dht22.getHumidity() + "%", 0, 32);
+					display.getCurrentBuffer().drawString("F " + tr + " " + fan.getSpeed() + "%", 0, 48);
 				} catch (Exception e) {
 					e.printStackTrace();
 					display.getCurrentBuffer().drawString("%99%", 0, 0);
@@ -214,24 +281,23 @@ public class Rovy implements Runnable {
 				}
 				display.update();
 			}
-
-			Date lastShot = cam.getTimestampMediaCreation();
-			if (lastShot != null) {
-				Date now = new Date();
-				if (now.getTime() - lastShot.getTime() > 60000l)
-					cam.deselectMedia();
-			}
-
-			float tempDiff = dht22.getTemperature() - (float)targetTemperature;
-			if (tempDiff > 0) {
-				fan.setSpeed((int) (tempDiff * 40.0f));
-			} else {
-				fan.stop();
-			}
-
-			blink = !blink;
-
 		}
+	}
+
+	private class FastUpdater implements Runnable {
+		
+		public void run() {
+			while (true) { 
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				btn1.update();
+				btn2.update();
+			}
+		}
+		
 	}
 
 }

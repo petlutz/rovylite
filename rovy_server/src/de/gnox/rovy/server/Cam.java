@@ -124,6 +124,15 @@ public class Cam {
 			e.printStackTrace();
 		}
 	}
+	
+	public void update() {
+		Date lastShot = getTimestampMediaCreation();
+		if (lastShot != null) {
+			Date now = new Date();
+			if (now.getTime() - lastShot.getTime() > 60000l)
+				deselectMedia();
+		}
+	}
 
 //	private void waitForVideo()  {
 //		if (videoCapturingProcess == null)
@@ -222,6 +231,11 @@ public class Cam {
 
 	public void switchLight(boolean enabled) {
 		this.lightEnabled = enabled;
+		switchLight();
+	}
+	
+	public void toggleLight() {
+		this.lightEnabled = !this.lightEnabled;
 		switchLight();
 	}
 
@@ -394,4 +408,6 @@ public class Cam {
 	private File video;
 
 	private String MEDIA_PATH = "media/";
+
+
 }
