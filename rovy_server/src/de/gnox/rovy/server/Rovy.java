@@ -44,7 +44,7 @@ public class Rovy  {
 		config = new Config();
 		dht22 = new DHT22(config.getPinDHT22Data());
 		cam = new Cam(config);
-		fan = new PwmFan(config.getPinFanControl());
+		fan = new PwmFan(config.getPinFanControl(), config.getPinFanPower());
 		display = new I2cDisplay();
 
 		btn1 = new Button(config.getPinButton1()) {
@@ -243,9 +243,9 @@ public class Rovy  {
 				updateDisplay(blink);
 				updateCam();
 				updateFan();
-
 				blink = !blink;
 
+				Runtime.getRuntime().gc();
 			}
 		}
 

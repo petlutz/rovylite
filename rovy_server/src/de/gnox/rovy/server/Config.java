@@ -38,6 +38,10 @@ public class Config {
 		return RaspiPin.GPIO_26;
 	}
 	
+	public Pin getPinFanPower() {
+		return RaspiPin.GPIO_22;
+	}
+	
 	public Pin getPinButton1() {
 		return RaspiPin.GPIO_28;
 	}

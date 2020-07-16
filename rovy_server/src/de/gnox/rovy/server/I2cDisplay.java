@@ -1047,6 +1047,8 @@ public class I2cDisplay {
 			return;
 		try {
 			enabled.set(false);
+			showBuffer(bufNormal);
+			RovyUtility.sleep(100);
 			showBuffer(bufEyesClosed1);
 			RovyUtility.sleep(100);
 			showBuffer(bufEyesClosed2);
