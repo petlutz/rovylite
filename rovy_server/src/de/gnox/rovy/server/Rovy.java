@@ -240,6 +240,11 @@ public class Rovy  {
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
+				try {
+					dht22.refreshData();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}				
 				updateDisplay(blink);
 				updateCam();
 				updateFan();
@@ -262,9 +267,7 @@ public class Rovy  {
 			if (display.isEnabled()) {
 				display.getCurrentBuffer().clear();
 				try {
-					dht22.refreshData();
 					char tr = ':';// blink ? ':' : ' ';
-
 					display.getCurrentBuffer().drawString("T " + tr + " " + dht22.getTemperature() + "°", 0, 0);
 					display.getCurrentBuffer().drawString("T!" + tr + " " + targetTemperature + "°", 0, 16);
 					display.getCurrentBuffer().drawString("H " + tr + " " + dht22.getHumidity() + "%", 0, 32);
