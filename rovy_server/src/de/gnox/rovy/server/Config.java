@@ -2,6 +2,7 @@ package de.gnox.rovy.server;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.i2c.I2CBus;
 
 public class Config {
 	
@@ -48,6 +49,10 @@ public class Config {
 	
 	public Pin getPinButton2() {
 		return RaspiPin.GPIO_25;
+	}
+
+	public int getDisplayI2cBusNr() {
+		return I2CBus.BUS_1;
 	}
 	
 	

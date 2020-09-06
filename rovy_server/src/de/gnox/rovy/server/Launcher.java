@@ -9,7 +9,7 @@ import de.gnox.rovy.api.RovyCom;
 
 public class Launcher {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {O
         if(System.getSecurityManager() == null)
         {
             System.setSecurityManager(new RMISecurityManager());
@@ -28,7 +28,6 @@ public class Launcher {
 //			e.printStackTrace();
 //		}
             RovyCom obj = new RovyComImpl();
-        	System.out.println("RovyCom server running ...");
             Naming.rebind("rmi://127.0.0.1:1234/RovyCom",obj);
         }catch (Exception e){
             throw new RuntimeException(e);

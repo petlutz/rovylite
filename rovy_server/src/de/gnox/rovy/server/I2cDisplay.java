@@ -357,11 +357,11 @@ public class I2cDisplay {
 
 	private I2CDevice display;
 
-	public I2cDisplay() {
-		init();
+	public I2cDisplay(int i2cBusNr) {
+		init(i2cBusNr);
 	}
 
-	private void init() {
+	private void init(int i2cBusNr) {
 
 		String[] xpm_lookforeward = {
 				"                                                                                                                                ",
@@ -953,7 +953,7 @@ public class I2cDisplay {
 				"                                                        ................                                                        ",
 				"                                                           ..........                                                           " };
 		try {
-			I2CBus i2c = I2CFactory.getInstance(I2CBus.BUS_1);
+			I2CBus i2c = I2CFactory.getInstance(i2cBusNr);
 
 			display = i2c.getDevice(DISPLAY_ADDR);
 

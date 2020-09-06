@@ -26,10 +26,9 @@ public class Rovy  {
 	private Button btn2;
 
 	public Rovy() {
-		System.out.println("NEW ROVER");
+		System.out.println("Welcome at rovylite-server!");
 		initRaspIo();
-		System.out.println("raspinit fertig");
-
+	
 		new Thread(new SlowUpdater()).start();
 		new Thread(new FastUpdater()).start();
 		// display = new I2cDisplay();
@@ -42,11 +41,15 @@ public class Rovy  {
 	public void initRaspIo() {
 
 		config = new Config();
+		System.out.println("init sensors (dht22) ..");
 		dht22 = new DHT22(config.getPinDHT22Data());
+		System.out.println("init cam ..");
 		cam = new Cam(config);
+		System.out.println("init fan ..");
 		fan = new PwmFan(config.getPinFanControl(), config.getPinFanPower());
-		display = new I2cDisplay();
-
+		System.out.println("init display ..");
+		display = new I2cDisplay(config.getDisplayI2cBusNr());
+		System.out.println("init buttons ..");
 		btn1 = new Button(config.getPinButton1()) {
 			@Override
 			public void onPressed() {
@@ -70,6 +73,7 @@ public class Rovy  {
 				powerOff();
 			}
 		};
+		System.out.println("init done");
 
 //		GpioUtil.enableNonPrivilegedAccess();
 //		try {

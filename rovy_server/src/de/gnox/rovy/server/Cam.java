@@ -88,7 +88,7 @@ public class Cam {
 
 		String cmd = "raspivid -o " + MEDIA_PATH + "video.h264 -fps 30 -w 640 -h 480 -t " + millisWithBorder;
 		try {
-			System.out.println(cmd);
+			System.out.println("exec: " + cmd);
 			switchLightOn();
 			videoCapturingProcess = Runtime.getRuntime().exec(cmd);
 			RovyUtility.sleep(borderMillis);
@@ -112,7 +112,7 @@ public class Cam {
 
 		String cmd = "MP4Box -fps 30 -add " + MEDIA_PATH + "video.h264 " + vidPath;
 		try {
-			System.out.println(cmd);
+			System.out.println("exec: " + cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			video = new File(vidPath);
@@ -175,6 +175,7 @@ public class Cam {
 		String cmd = "raspistill -o " + picPath;
 		switchLightOn();
 		try {
+			System.out.println("exec: " + cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			picture = new File(picPath);
@@ -199,6 +200,7 @@ public class Cam {
 
 		switchLightOn();
 		try {
+			System.out.println("exec: " + cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();
 			picture = new File(picPath);
