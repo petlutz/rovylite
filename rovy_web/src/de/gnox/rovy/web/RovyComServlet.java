@@ -193,6 +193,16 @@ public class RovyComServlet extends HttpServlet {
 		w.append("</pre></p>");
 		
 		w.append("</td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640; background-color: #abc; padding:8;'>");
+		
+		w.append("<p><pre><u>OctoPrint Data</u><br>");
+		
+		OctoPrintClient op = new OctoPrintClient();
+		op.update();
+		w.append(op.toString());
+		
+		w.append("</pre></p>");
+		
+		w.append("</td></tr><tr><td valign='top' colspan='3' style='width:640; min-width:640; background-color: #abc; padding:8;'>");
 		w.append("<a href='RovyComServlet?page=media'>media</a>");
 
 		w.append("</td></tr></table>");
