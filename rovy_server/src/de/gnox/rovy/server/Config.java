@@ -19,7 +19,8 @@ public class Config {
 	}
 	
 	public int getPinDHT22Data() {
-		return 2;
+		return 22;
+//		return RaspiPin.GPIO_22;
 		//Integer.parseInt(properties.getProperty("pin.dht22data"));
 	}
 	

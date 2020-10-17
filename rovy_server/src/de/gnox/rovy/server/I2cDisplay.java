@@ -1028,10 +1028,10 @@ public class I2cDisplay {
 			display.write(0, (byte) 0xaf); // display on
 			// clear();
 			// RovyUtility.sleep(100);
-			showBuffer(bufEyesClosed2);
-			RovyUtility.sleep(100);
-			showBuffer(bufEyesClosed1);
-			RovyUtility.sleep(100);
+//			showBuffer(bufEyesClosed2);
+//			RovyUtility.sleep(100);
+//			showBuffer(bufEyesClosed1);
+//			RovyUtility.sleep(100);
 			showBuffer(bufNormal);
 			RovyUtility.sleep(100);
 			// clear();
@@ -1047,12 +1047,12 @@ public class I2cDisplay {
 			return;
 		try {
 			enabled.set(false);
-			showBuffer(bufNormal);
-			RovyUtility.sleep(100);
-			showBuffer(bufEyesClosed1);
-			RovyUtility.sleep(100);
-			showBuffer(bufEyesClosed2);
-			RovyUtility.sleep(100);
+//			showBuffer(bufNormal);
+//			RovyUtility.sleep(100);
+//			showBuffer(bufEyesClosed1);
+//			RovyUtility.sleep(100);
+//			showBuffer(bufEyesClosed2);
+//			RovyUtility.sleep(100);
 			clear();
 			display.write(0, (byte) 0xae); // display off
 		} catch (Exception e) {

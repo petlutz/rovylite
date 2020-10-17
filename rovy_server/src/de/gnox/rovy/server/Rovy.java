@@ -1,11 +1,9 @@
 package de.gnox.rovy.server;
 
-import java.util.Date;
-
 import de.gnox.rovy.api.RovyCommand;
 import de.gnox.rovy.api.RovyTelemetryData;
 
-public class Rovy  {
+public class Rovy {
 
 	private Config config;
 
@@ -15,7 +13,7 @@ public class Rovy  {
 
 	private PwmFan fan;
 
-	private DHT22 dht22;
+	private DHT22Simple dht22;
 
 	private I2cDisplay display;
 
@@ -28,9 +26,6 @@ public class Rovy  {
 	public Rovy() {
 		System.out.println("Welcome at rovylite-server!");
 		initRaspIo();
-	
-		new Thread(new SlowUpdater()).start();
-		new Thread(new FastUpdater()).start();
 		// display = new I2cDisplay();
 
 		display.switchOn();
@@ -42,7 +37,7 @@ public class Rovy  {
 
 		config = new Config();
 		System.out.println("init sensors (dht22) ..");
-		dht22 = new DHT22(config.getPinDHT22Data());
+		dht22 = new DHT22Simple(config.getPinDHT22Data());
 		System.out.println("init cam ..");
 		cam = new Cam(config);
 		System.out.println("init fan ..");
@@ -164,7 +159,6 @@ public class Rovy  {
 		cam.switchLight(true);
 	}
 
-	
 	private void powerOff() {
 		transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "0");
 		lightOff();
@@ -219,7 +213,7 @@ public class Rovy  {
 
 	private RovyCommand lastCommand = null;
 
-//	private List<RovyCommand> commandHistory = new ArrayList<>();
+//	private List<RovyCommand> commandHistory = new ArrayList<>();<
 
 	public static Rovy instance() {
 		if (roverInstance == null)
@@ -232,79 +226,93 @@ public class Rovy  {
 	//// roverInstance = null;
 	// }
 
+	private int updateCnt = 0;
+
+	public void update() {
+		updateCnt++;
+		updateOften();
+		if (updateCnt > 300) {
+			updateRare();
+			updateCnt = 0;
+		}
+	}
+
+	private void updateOften() {
+		btn1.update();
+		btn2.update();
+	}
+
+	private boolean blink = false;
+
+//	private int dht22CheckCnt = 0;
+
+	private void updateRare() {
+		try {
+			dht22.refreshData();
+//			dht22.read();
+//			if (dht22.getHumidity() == 0.0f && dht22.getTemperature() == 0.0f) {
+//				System.err.println("sensors dont work!");
+//				dht22CheckCnt++;
+//			} else {
+//				dht22CheckCnt = 0;
+//			}
+//			if (dht22CheckCnt > 10)
+//				System.exit(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		updateDisplay(blink);
+		updateCam();
+		updateFan();
+		blink = !blink;
+		Runtime.getRuntime().gc();
+	}
+
+	private void updateFan() {
+//		if (dht22.getTemperature() == null) {
+//			System.out.println("could not detect temperature");
+//			return;
+//		}
+		Float temp = dht22.getTemperature();
+		if (temp == null) { // handling dht22 read error
+			fan.setSpeed(100);
+		} else {
+			fan.update(temp, (double) targetTemperature);
+		}
+//		fan.setSpeed(targetTemperature);
+	}
+
+	private void updateCam() {
+		cam.update();
+	}
+
+	private void updateDisplay(boolean blink) {
+		if (display.isEnabled() ) {
+			display.getCurrentBuffer().clear();
+			try {
+				char tr = ':';// blink ? ':' : ' ';
+				Float temperature = dht22.getTemperature();
+				if (temperature != null)
+					display.getCurrentBuffer().drawString("T " + tr + " " + temperature + "°", 0, 0);
+				display.getCurrentBuffer().drawString("T!" + tr + " " + targetTemperature + "°", 0, 16);
+				Float humidity = dht22.getHumidity();
+				if (humidity != null)
+					display.getCurrentBuffer().drawString("H " + tr + " " + humidity + "%", 0, 32);
+				display.getCurrentBuffer().drawString("F " + tr + " " + fan.getSpeed() + "%", 0, 48);
+			} catch (Exception e) {
+				e.printStackTrace();
+				display.getCurrentBuffer().drawString("%99%", 0, 0);
+			}
+			if (blink) {
+				display.getCurrentBuffer().setPixel(126, 0, true);
+				display.getCurrentBuffer().setPixel(126, 1, true);
+				display.getCurrentBuffer().setPixel(127, 0, true);
+				display.getCurrentBuffer().setPixel(127, 1, true);
+			}
+			display.update();
+		}
+	}
+
 	private static Rovy roverInstance = null;
-
-	private class SlowUpdater implements Runnable {
-
-		public void run() {
-			boolean blink = false;
-			while (true) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-				try {
-					dht22.refreshData();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}				
-				updateDisplay(blink);
-				updateCam();
-				updateFan();
-				blink = !blink;
-
-				Runtime.getRuntime().gc();
-			}
-		}
-
-		private void updateFan() {
-			fan.update(dht22.getTemperature(), (float) targetTemperature);
-//			fan.setSpeed(targetTemperature);
-		}
-
-		private void updateCam() {
-			cam.update();
-		}
-
-		private void updateDisplay(boolean blink) {
-			if (display.isEnabled()) {
-				display.getCurrentBuffer().clear();
-				try {
-					char tr = ':';// blink ? ':' : ' ';
-					display.getCurrentBuffer().drawString("T " + tr + " " + dht22.getTemperature() + "°", 0, 0);
-					display.getCurrentBuffer().drawString("T!" + tr + " " + targetTemperature + "°", 0, 16);
-					display.getCurrentBuffer().drawString("H " + tr + " " + dht22.getHumidity() + "%", 0, 32);
-					display.getCurrentBuffer().drawString("F " + tr + " " + fan.getSpeed() + "%", 0, 48);
-				} catch (Exception e) {
-					e.printStackTrace();
-					display.getCurrentBuffer().drawString("%99%", 0, 0);
-				}
-				if (blink) {
-					display.getCurrentBuffer().setPixel(126, 0, true);
-					display.getCurrentBuffer().setPixel(126, 1, true);
-					display.getCurrentBuffer().setPixel(127, 0, true);
-					display.getCurrentBuffer().setPixel(127, 1, true);
-				}
-				display.update();
-			}
-		}
-	}
-
-	private class FastUpdater implements Runnable {
-		
-		public void run() {
-			while (true) { 
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-				btn1.update();
-				btn2.update();
-			}
-		}
-		
-	}
 
 }

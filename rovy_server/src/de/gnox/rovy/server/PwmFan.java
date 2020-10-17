@@ -45,8 +45,8 @@ public class PwmFan {
 //		SoftPwm.softPwmWrite(pinPwm, this.speed);
 	}
 	
-	public void update(float currentTemperature, float targetTemperature) {
-		float tempDiff = currentTemperature - (float) targetTemperature;
+	public void update(double currentTemperature, double targetTemperature) {
+		double tempDiff = currentTemperature - targetTemperature;
 		if (tempDiff > 0) {
 			setSpeed((int) (tempDiff * 40.0f));
 		} else {

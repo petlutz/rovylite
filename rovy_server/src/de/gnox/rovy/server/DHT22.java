@@ -63,6 +63,7 @@ public class DHT22 {
 				j++;
 			}
 		}
+		
 		return j;
 
 	}
