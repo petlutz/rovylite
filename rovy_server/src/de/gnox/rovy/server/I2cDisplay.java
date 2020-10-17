@@ -1033,7 +1033,7 @@ public class I2cDisplay {
 //			showBuffer(bufEyesClosed1);
 //			RovyUtility.sleep(100);
 			showBuffer(bufNormal);
-			RovyUtility.sleep(100);
+			RovyUtility.sleep(10);
 			// clear();
 			enabled.set(true);
 //			new Thread(this).start();
