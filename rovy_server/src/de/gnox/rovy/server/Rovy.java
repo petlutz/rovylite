@@ -78,6 +78,34 @@ public class Rovy {
 //		}
 	}
 
+	public void startUpdating() {
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (true) {
+					Rovy.instance().updateRare();
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+
+		while (true) {
+			Rovy.instance().updateOften();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 	private void captureVideo(RovyCommand command) throws RovyException {
 		String seconds = command.getParameter("seconds");
 		if (seconds == null)
@@ -226,17 +254,6 @@ public class Rovy {
 	//// roverInstance = null;
 	// }
 
-	private int updateCnt = 0;
-
-	public void update() {
-		updateCnt++;
-		updateOften();
-		if (updateCnt > 300) {
-			updateRare();
-			updateCnt = 0;
-		}
-	}
-
 	private void updateOften() {
 		btn1.update();
 		btn2.update();
@@ -287,7 +304,7 @@ public class Rovy {
 	}
 
 	private void updateDisplay(boolean blink) {
-		if (display.isEnabled() ) {
+		if (display.isEnabled()) {
 			display.getCurrentBuffer().clear();
 			try {
 				char tr = ':';// blink ? ':' : ' ';

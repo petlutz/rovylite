@@ -29,11 +29,8 @@ public class Launcher {
             RovyCom obj = new RovyComImpl();
             Naming.rebind("rmi://127.0.0.1:1234/RovyCom",obj);
             
-            System.out.println("main loop running ...");
-            while (true) {
-            	Rovy.instance().update();
-            	RovyUtility.sleep(10);
-            }
+            System.out.println("server running ..." );
+            Rovy.instance().startUpdating();
             
         }catch (Exception e){
             throw new RuntimeException(e);
