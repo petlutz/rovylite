@@ -19,7 +19,7 @@ import de.gnox.rovy.api.RovyTelemetryData;
 
 public class OctoPrintClient {
 
-	private static final String OctoPrintApiKey = "geheim";
+	private static final String OctoPrintApiKey = "geheim"; // FIXME
 
 	private static URI OctoPrintUrl = UriBuilder.fromUri("http://localhost:5000").build();
 
@@ -90,6 +90,13 @@ public class OctoPrintClient {
 			return;
 		}
 
+	}
+	
+	public void cancleJob() {
+		String cmd = "{\"command\": \"cancel\"}";
+		WebResource service = jerseyClient().resource(OctoPrintUrl);
+		service.path("api").path("job").queryParam("apikey", OctoPrintApiKey).header("content-type", MediaType.APPLICATION_JSON)
+				.post(String.class, cmd);
 	}
 
 	public BigDecimal getPrinterBedTempActual() {

@@ -294,6 +294,22 @@ public class I2cDisplay {
 			" ..    .. ",
 			" ..    .. ",
 			"  .    .  " };
+	
+	private static String[] xpm_a      ={
+			"    ..    ",
+			"   ....   ",
+			"  ..  ..  ",
+			"  ..  ..  ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			"  .    .  " };
 
 	private static String[] xpm_f      ={
 			"  ......  ",
@@ -343,21 +359,21 @@ public class I2cDisplay {
 			" ..       ",
 	};
 	
-	private static String[] xpm_excl = { 
-			"    ..    ", 
-			"    ..    ", 
-			"    ..    ", 
-			"    ..    ", 
-			"    ..    ",
-			"    ..    ", 
-			"    ..    ", 
-			"    ..    ", 
-			"    ..    ", 
-			"    ..    ", 
-			"          ", 
-			"          ",
-			"    ..    ", 
-			"    ..    " };
+	private static String[] xpm_r ={
+			" .......  ",
+			" ........ ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ..    .. ",
+			" ........ ",
+			" .......  ",
+			" ..  ..   ",
+			" ..   ..  ",
+			" ..   ..  ",
+			" ..    .. ",
+			" ..    .. ",
+	};
 	
 	private static String[] xpm_slash = { 
 			"       .. ",
@@ -374,6 +390,55 @@ public class I2cDisplay {
 			"  ..      ",
 			" ..       ",
 			" ..       " };
+	
+	private static String[] xpm_excl = { 
+			"    ..    ", 
+			"    ..    ", 
+			"    ..    ", 
+			"    ..    ", 
+			"    ..    ",
+			"    ..    ", 
+			"    ..    ", 
+			"    ..    ", 
+			"    ..    ", 
+			"    ..    ", 
+			"          ", 
+			"          ",
+			"    ..    ", 
+			"    ..    " };
+	
+	private static String[] xpm_n = { 
+			" ..    .. ",
+			" ..    .. ",
+			" ...   .. ",
+			" ...   .. ",
+			" ....  .. ",
+			" ....  .. ",
+			" .. .. .. ",
+			" .. .. .. ",
+			" ..  .... ",
+			" ..  .... ",
+			" ..   ... ",
+			" ..   ... ",
+			" ..    .. ",
+			" ..    .. " };
+	
+
+	private static String[] xpm_greater = { 
+					" ..       ",
+					" ...      ",
+					"  ...     ",
+					"   ...    ",
+					"    ...   ",
+					"     ...  ",
+					"      ... ",
+					"      ... ",
+					"     ...  ",
+					"    ...   ",
+					"   ...    ",
+					"  ...     ",
+					" ...      ",
+					" ..       " };
 	// @formatter:on
 
 	private static Map<Character, String[]> char2xpm;
@@ -396,12 +461,16 @@ public class I2cDisplay {
 		char2xpm.put(':', xpm_dpoint);
 		char2xpm.put('T', xpm_t);
 		char2xpm.put('H', xpm_h);
+		char2xpm.put('A', xpm_a);
 		char2xpm.put('F', xpm_f);
 		char2xpm.put('B', xpm_b);
 		char2xpm.put('P', xpm_p);
+		char2xpm.put('O', xpm_0);
+		char2xpm.put('N', xpm_n);
+		char2xpm.put('R', xpm_r);
 		char2xpm.put('!', xpm_excl);
 		char2xpm.put('I', xpm_i);
-		char2xpm.put('/', xpm_slash);
+		char2xpm.put('>', xpm_greater);
 	}
 
 	private ScreenBuffer currentBuffer;

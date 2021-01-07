@@ -11,6 +11,8 @@ import com.pi4j.io.gpio.PinState;
 public class Button {// implements GpioPinListenerDigital {
 
 	private Date timestampPressed = null;
+	
+	private boolean longPressed = false;
 
 	GpioPinDigitalInput button = null;
 
@@ -53,13 +55,16 @@ public class Button {// implements GpioPinListenerDigital {
 //		System.out.println("BottonState: " + button.getState());
 		if (isPressed()) {
 			if (button.getState() == PinState.HIGH) {
-				onPressed();
+				if (!longPressed)
+					onPressed();
+				longPressed = false;
 				timestampPressed = null;
 			} else {
 				long timeLeft = new Date().getTime() - timestampPressed.getTime();
-				if (timeLeft > 5000) {
+				if (timeLeft > 3000) {
 					onLongPressed();
 					timestampPressed = null;
+					longPressed = true;
 				}
 			}
 

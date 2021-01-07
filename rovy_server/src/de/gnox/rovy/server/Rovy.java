@@ -25,13 +25,15 @@ public class Rovy {
 
 	private OctoPrintClient octoPrint;
 
+	private ControlMode ctrlMode = ControlMode.InfoDisplay;
+
 	public Rovy() {
 		System.out.println("Welcome at rovylite-server!");
 		initRaspIo();
 		// display = new I2cDisplay();
 
 		display.switchOn();
-		RovyUtility.sleep(5000);
+		RovyUtility.sleep(2000);
 		display.switchOff();
 	}
 
@@ -55,20 +57,25 @@ public class Rovy {
 
 			@Override
 			public void onLongPressed() {
-				powerOn();
+				if (ctrlMode.getCommand() != null) {
+					performCommand(ctrlMode.getCommand());
+					ctrlMode = ControlMode.InfoDisplay;
+					updateDisplay(blink);
+				}
 			}
 		};
 
 		btn2 = new Button(config.getPinButton2()) {
 			@Override
 			public void onPressed() {
-				display.toggleOnOff();
+				int ctrlModeIndex = ctrlMode.ordinal();
+				ctrlModeIndex++;
+				if (ctrlModeIndex >= ControlMode.values().length)
+					ctrlModeIndex = 0;
+				ctrlMode = ControlMode.values()[ctrlModeIndex];
+				updateDisplay(blink);
 			}
 
-			@Override
-			public void onLongPressed() {
-				powerOff();
-			}
 		};
 
 		octoPrint = new OctoPrintClient();
@@ -165,11 +172,8 @@ public class Rovy {
 //				send 00011 3 1
 				powerOff();
 				break;
-			case DisplayOn:
-				display.switchOn();
-				break;
-			case DisplayOff:
-				display.switchOff();
+			case AbortJob:
+				octoPrint.cancleJob();
 				break;
 			default:
 				throw new RovyException("unknown command");
@@ -194,14 +198,10 @@ public class Rovy {
 
 	private void powerOff() {
 		transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "0");
-		lightOff();
-		display.switchOff();
 	}
 
 	private void powerOn() {
-		lightOn();
 		transmitter.send(config.getPowerSwitchSystemCode(), config.getPowerSwitchUnitCode(), "1");
-		display.switchOn();
 	}
 
 	private void setTargetTemperatur(RovyCommand command) {
@@ -295,54 +295,66 @@ public class Rovy {
 		cam.update();
 	}
 
-	private void updateDisplay(boolean blink) {
-		if (display.isEnabled()) {
-			display.getCurrentBuffer().clear();
-			try {
-				char tr = ':';// blink ? ':' : ' ';
-				Float temperature = dht22.getTemperature();
-				if (temperature != null)
-					display.getCurrentBuffer().drawString("T " + tr + StringUtil.fillBefore(4, ' ', "" + temperature)
-							+ "°" + "/" + StringUtil.fillBefore(3, ' ', targetTemperature + "") + "°", 0, 0);
-				if (octoPrint.getPrinterBedTempActual() != null)
-					display.getCurrentBuffer()
-							.drawString(
-									"BT" + tr
-											+ StringUtil.fillBefore(5, ' ', StringUtil
-													.valueWithUnitToString(octoPrint.getPrinterBedTempActual(), "°"))
-											+ "/"
-											+ StringUtil.fillBefore(4, ' ', StringUtil
-													.valueWithUnitToString(octoPrint.getPrinterBedTempTarget(), "°")),
-									0, 16);
-				if (octoPrint.getPrinterHotendTempActual() != null)
-					display.getCurrentBuffer().drawString(
-							"HT" + tr
-									+ StringUtil.fillBefore(5, ' ',
-											StringUtil
-													.valueWithUnitToString(octoPrint.getPrinterHotendTempActual(), "°"))
-									+ "/"
-									+ StringUtil.fillBefore(4, ' ', StringUtil
-											.valueWithUnitToString(octoPrint.getPrinterHotendTempTarget(), "°")),
-							0, 32);
-				if (octoPrint.getProgressCompletion() != null)
-					display.getCurrentBuffer()
-							.drawString(
-									"P " + tr
-											+ StringUtil.fillBefore(5, ' ', StringUtil
-													.valueWithUnitToString(octoPrint.getProgressCompletion(), "%")),
-									0, 48);
-			} catch (Exception e) {
-				e.printStackTrace();
-				display.getCurrentBuffer().drawString("%99%", 0, 0);
-			}
-			if (blink) {
-				display.getCurrentBuffer().setPixel(126, 0, true);
-				display.getCurrentBuffer().setPixel(126, 1, true);
-				display.getCurrentBuffer().setPixel(127, 0, true);
-				display.getCurrentBuffer().setPixel(127, 1, true);
-			}
-			display.update();
+	private synchronized void updateDisplay(boolean blink) {
+		if (ctrlMode == ControlMode.DisplayOff) {
+			if (display.isEnabled())
+				display.switchOff();
+			return;
 		}
+
+		if (!display.isEnabled())
+			display.switchOn();
+
+		display.getCurrentBuffer().clear();
+		try {
+			char tr = ':';// blink ? ':' : ' ';
+			Float temperature = dht22.getTemperature();
+			
+			if (ctrlMode.getCommand() == null) {
+			
+				if (temperature != null)
+					display.getCurrentBuffer().drawString("T " + tr + StringUtil.fillBefore(4, ' ', "" + temperature) + "°"
+							+ "/" + StringUtil.fillBefore(3, ' ', targetTemperature + "") + "°", 0, 0);
+			} else {
+				display.getCurrentBuffer().drawString("> " + ctrlMode.getCaption(), 0, 0);
+			}
+			
+			if (octoPrint.getPrinterBedTempActual() != null)
+				display.getCurrentBuffer()
+						.drawString("BT" + tr
+								+ StringUtil.fillBefore(5, ' ',
+										StringUtil.valueWithUnitToString(octoPrint.getPrinterBedTempActual(), "°"))
+								+ "/"
+								+ StringUtil.fillBefore(4, ' ',
+										StringUtil.valueWithUnitToString(octoPrint.getPrinterBedTempTarget(), "°")),
+								0, 16);
+			if (octoPrint.getPrinterHotendTempActual() != null)
+				display.getCurrentBuffer().drawString(
+						"HT" + tr
+								+ StringUtil.fillBefore(5, ' ',
+										StringUtil.valueWithUnitToString(octoPrint.getPrinterHotendTempActual(), "°"))
+								+ "/"
+								+ StringUtil.fillBefore(4, ' ',
+										StringUtil.valueWithUnitToString(octoPrint.getPrinterHotendTempTarget(), "°")),
+						0, 32);
+			if (octoPrint.getProgressCompletion() != null)
+				display.getCurrentBuffer().drawString(
+						"P " + tr
+								+ StringUtil.fillBefore(5, ' ',
+										StringUtil.valueWithUnitToString(octoPrint.getProgressCompletion(), "%")),
+						0, 48);
+		} catch (Exception e) {
+			e.printStackTrace();
+			display.getCurrentBuffer().drawString("%99%", 0, 0);
+		}
+		if (blink) {
+			display.getCurrentBuffer().setPixel(126, 0, true);
+			display.getCurrentBuffer().setPixel(126, 1, true);
+			display.getCurrentBuffer().setPixel(127, 0, true);
+			display.getCurrentBuffer().setPixel(127, 1, true);
+		}
+		display.update();
+
 	}
 
 	private static Rovy roverInstance = null;
