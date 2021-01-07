@@ -23,6 +23,8 @@ public class Rovy {
 
 	private Button btn2;
 
+	private OctoPrintClient octoPrint;
+
 	public Rovy() {
 		System.out.println("Welcome at rovylite-server!");
 		initRaspIo();
@@ -68,6 +70,9 @@ public class Rovy {
 				powerOff();
 			}
 		};
+
+		octoPrint = new OctoPrintClient();
+
 		System.out.println("init done");
 
 //		GpioUtil.enableNonPrivilegedAccess();
@@ -232,6 +237,8 @@ public class Rovy {
 
 		cam.fillTelemetryData("cam: ", telemetryData);
 		fan.fillTelemetryData("fan: ", telemetryData);
+		octoPrint.fillTelemetryData("octoprint: ", telemetryData);
+
 		return telemetryData;
 	}
 
@@ -261,20 +268,10 @@ public class Rovy {
 
 	private boolean blink = false;
 
-//	private int dht22CheckCnt = 0;
-
 	private void updateRare() {
+		octoPrint.update();
 		try {
 			dht22.refreshData();
-//			dht22.read();
-//			if (dht22.getHumidity() == 0.0f && dht22.getTemperature() == 0.0f) {
-//				System.err.println("sensors dont work!");
-//				dht22CheckCnt++;
-//			} else {
-//				dht22CheckCnt = 0;
-//			}
-//			if (dht22CheckCnt > 10)
-//				System.exit(1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -286,17 +283,12 @@ public class Rovy {
 	}
 
 	private void updateFan() {
-//		if (dht22.getTemperature() == null) {
-//			System.out.println("could not detect temperature");
-//			return;
-//		}
 		Float temp = dht22.getTemperature();
 		if (temp == null) { // handling dht22 read error
 			fan.setSpeed(100);
 		} else {
 			fan.update(temp, (double) targetTemperature);
 		}
-//		fan.setSpeed(targetTemperature);
 	}
 
 	private void updateCam() {
@@ -310,12 +302,35 @@ public class Rovy {
 				char tr = ':';// blink ? ':' : ' ';
 				Float temperature = dht22.getTemperature();
 				if (temperature != null)
-					display.getCurrentBuffer().drawString("T " + tr + " " + temperature + "°", 0, 0);
-				display.getCurrentBuffer().drawString("T!" + tr + " " + targetTemperature + "°", 0, 16);
-				Float humidity = dht22.getHumidity();
-				if (humidity != null)
-					display.getCurrentBuffer().drawString("H " + tr + " " + humidity + "%", 0, 32);
-				display.getCurrentBuffer().drawString("F " + tr + " " + fan.getSpeed() + "%", 0, 48);
+					display.getCurrentBuffer().drawString("T " + tr + StringUtil.fillBefore(4, ' ', "" + temperature)
+							+ "°" + "/" + StringUtil.fillBefore(3, ' ', targetTemperature + "") + "°", 0, 0);
+				if (octoPrint.getPrinterBedTempActual() != null)
+					display.getCurrentBuffer()
+							.drawString(
+									"BT" + tr
+											+ StringUtil.fillBefore(5, ' ', StringUtil
+													.valueWithUnitToString(octoPrint.getPrinterBedTempActual(), "°"))
+											+ "/"
+											+ StringUtil.fillBefore(4, ' ', StringUtil
+													.valueWithUnitToString(octoPrint.getPrinterBedTempTarget(), "°")),
+									0, 16);
+				if (octoPrint.getPrinterHotendTempActual() != null)
+					display.getCurrentBuffer().drawString(
+							"HT" + tr
+									+ StringUtil.fillBefore(5, ' ',
+											StringUtil
+													.valueWithUnitToString(octoPrint.getPrinterHotendTempActual(), "°"))
+									+ "/"
+									+ StringUtil.fillBefore(4, ' ', StringUtil
+											.valueWithUnitToString(octoPrint.getPrinterHotendTempTarget(), "°")),
+							0, 32);
+				if (octoPrint.getProgressCompletion() != null)
+					display.getCurrentBuffer()
+							.drawString(
+									"P " + tr
+											+ StringUtil.fillBefore(5, ' ', StringUtil
+													.valueWithUnitToString(octoPrint.getProgressCompletion(), "%")),
+									0, 48);
 			} catch (Exception e) {
 				e.printStackTrace();
 				display.getCurrentBuffer().drawString("%99%", 0, 0);
